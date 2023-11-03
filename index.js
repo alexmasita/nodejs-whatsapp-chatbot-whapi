@@ -137,7 +137,7 @@ async function handleNewMessages(req, res){
                 }
                 case 'GROUP_CREATE': {
                     /* Warning : you can create group only with contacts from phone contact list */
-                    const res = await sendWhapiRequest(`groups`, {subject: 'Whapi.Cloud Test', participants: [config.phone]});
+                    const res = await sendWhapiRequest(`groups`, {subject: 'Whapi.Cloud Test', participants: [message.from]});
                     sender.body = res.group_id ? `Group created. Group id: ${res.group_id}` : 'Error';
                     break;
                 }
