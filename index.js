@@ -36,13 +36,13 @@ const FILES = {
  * @returns {Promise<object>}
  */
 async function sendWhapiRequest(endpoint, params= {}, method = 'POST') {
-    const options = {
+    let options = {
         method: method,
         headers: {
-            Authorization: `Bearer ${config.token}`,
-            'Content-Type': params?.media ? 'multipart/form-data' : 'application/json',
+            Authorization: `Bearer ${config.token}`
         },
     };
+    if (!params.media) options.headers['Content-Type'] = 'application/json';
     let url = `${config.apiUrl}/${endpoint}`;
     if(params && Object.keys(params).length > 0) {
         if(method === 'GET')
@@ -96,7 +96,7 @@ async function handleNewMessages(req, res){
             if (message.from_me) continue;
             /** type {import('./whapi').Sender} */
             const sender = {
-                to: message.from
+                to: message.chat_id
             }
             let endpoint = 'messages/text';
             const command = Object.keys(COMMANDS)[+message.text?.body?.trim() - 1];
@@ -137,7 +137,7 @@ async function handleNewMessages(req, res){
                 }
                 case 'GROUP_CREATE': {
                     /* Warning : you can create group only with contacts from phone contact list */
-                    const res = await sendWhapiRequest(`groups`, {subject: 'Whapi.Cloud Test', participants: [message.from]});
+                    const res = await sendWhapiRequest(`groups`, {subject: 'Whapi.Cloud Test', participants: [message.chat_id.split('@')[0]]});
                     sender.body = res.group_id ? `Group created. Group id: ${res.group_id}` : 'Error';
                     break;
                 }
