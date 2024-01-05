@@ -209,6 +209,8 @@ app.post("/messages", handleNewMessages);
 
 app.post("/webhook", (req, res) => {
   const messages = req.body.messages;
+  console.log("messages");
+  console.log(messages);
 
   messages.forEach((message) => {
     if (!message.from_me) {
