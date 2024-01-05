@@ -207,6 +207,20 @@ app.get("/", function (req, res) {
 
 app.post("/messages", handleNewMessages);
 
+const { Client } = require("pg");
+
+// Create a new client instance
+const client = new Client({
+  host: process.env.PG_HOST,
+  port: process.env.PG_PORT,
+  user: process.env.PG_USER,
+  password: process.env.PG_PASSWORD,
+  database: process.env.PG_DATABASE,
+});
+
+// Connect to the database
+client.connect();
+
 app.post("/webhook", (req, res) => {
   const messages = req.body.messages;
   console.log("messages");
@@ -220,10 +234,18 @@ app.post("/webhook", (req, res) => {
         console.log(`Received message from ${chat_id}: ${text}`);
 
         // Further processing: Database insertion, email forwarding, etc.
+        const query = "INSERT INTO messages (chat_id, text) VALUES ($1, $2)";
+        client.query(query, [chat_id, text], (err, res) => {
+          if (err) {
+            console.error("Error executing query", err.stack);
+          } else {
+            console.log("Inserted data into the database");
+          }
+        });
       }
     });
   } else {
-    console.log(`Òther objects`, req.body);
+    console.log(`Other objects`, req.body);
   }
 
   res.status(200).json({ status: "success" });
