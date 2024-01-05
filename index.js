@@ -211,17 +211,20 @@ app.post("/webhook", (req, res) => {
   const messages = req.body.messages;
   console.log("messages");
   console.log(messages);
+  if (messages) {
+    messages.forEach((message) => {
+      if (!message.from_me) {
+        const chat_id = message.chat_id.split("@")[0]; // Extracting phone number from chat_id
+        const text = message.text.body;
 
-  messages.forEach((message) => {
-    if (!message.from_me) {
-      const chat_id = message.chat_id.split("@")[0]; // Extracting phone number from chat_id
-      const text = message.text.body;
+        console.log(`Received message from ${chat_id}: ${text}`);
 
-      console.log(`Received message from ${chat_id}: ${text}`);
-
-      // Further processing: Database insertion, email forwarding, etc.
-    }
-  });
+        // Further processing: Database insertion, email forwarding, etc.
+      }
+    });
+  } else {
+    console.log(`Òther objects`, req.body);
+  }
 
   res.status(200).json({ status: "success" });
 });
