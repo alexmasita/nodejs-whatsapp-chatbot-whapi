@@ -4,6 +4,9 @@ const fs = require("fs");
 const fetch = require("node-fetch");
 const FormData = require("form-data");
 const config = require("./config.js");
+const addMessage = require("./methods");
+
+require("dotenv").config();
 
 process.on("unhandledRejection", (err) => {
   console.log(err);
@@ -207,76 +210,8 @@ app.get("/", function (req, res) {
 
 app.post("/messages", handleNewMessages);
 
-// const { Client } = require("pg");
-
-// // Create a new client instance
-
-// console.log(process.env.PG_PORT);
-// console.log(process.env.PG_USER);
-// console.log(process.env.PG_PASSWOR);
-// console.log(process.env.PG_DATABASE);
-
-// const client = new Client({
-//   host: process.env.PG_HOST,
-//   port: process.env.PG_PORT,
-//   user: process.env.PG_USER,
-//   password: process.env.PG_PASSWORD,
-//   database: process.env.PG_DATABASE,
-// });
-
-// // Connect to the database
-// client.connect();
-
-// app.post("/webhook", (req, res) => {
-//   const messages = req.body.messages;
-//   console.log("messages new test");
-//   console.log(messages);
-//   if (messages) {
-//     messages.forEach((message) => {
-//       if (!message.from_me) {
-//         const chat_id = message.chat_id.split("@")[0]; // Extracting phone number from chat_id
-//         const text = message.text.body;
-
-//         console.log(`Received message from ${chat_id}: ${text}`);
-
-//         // Further processing: Database insertion, email forwarding, etc.
-//         const query = "INSERT INTO messages (chat_id, text) VALUES ($1, $2)";
-//         client.query(query, [chat_id, text], (err, res) => {
-//           if (err) {
-//             console.error("Error executing query", err.stack);
-//           } else {
-//             console.log("Inserted data into the database");
-//           }
-//         });
-//       }
-//     });
-//   } else {
-//     console.log(`Other objects`, req.body);
-//   }
-
-//   res.status(200).json({ status: "success" });
-// });
-
-const { Client } = require("pg");
-
-// Create a new client instance
-
-console.log("connection info - process.env.DATABASE_URL");
-console.log(process.env.DATABASE_URL);
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
-// Connect to the database
-client.connect();
-
 app.post("/webhook", (req, res) => {
   const messages = req.body.messages;
-  console.log("messages new");
-  console.log(messages);
   console.log("process.env.DATABASE_URL");
   console.log(process.env.DATABASE_URL);
   if (messages) {
@@ -286,16 +221,8 @@ app.post("/webhook", (req, res) => {
         const text = message.text.body;
 
         console.log(`Received message from ${chat_id}: ${text}`);
-
         // Further processing: Database insertion, email forwarding, etc.
-        const query = "INSERT INTO messages (chat_id, text) VALUES ($1, $2)";
-        client.query(query, [chat_id, text], (err, res) => {
-          if (err) {
-            console.error("Error executing query", err.stack);
-          } else {
-            console.log("Inserted data into the database");
-          }
-        });
+        addMessage(chat_id, text);
       }
     });
   } else {
