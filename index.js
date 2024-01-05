@@ -4,7 +4,7 @@ const fs = require("fs");
 const fetch = require("node-fetch");
 const FormData = require("form-data");
 const config = require("./config.js");
-const addMessage = require("./methods");
+const addMessage = require("./methods.js");
 
 require("dotenv").config();
 
