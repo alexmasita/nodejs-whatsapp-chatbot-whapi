@@ -198,7 +198,7 @@ app.get("/", function (req, res) {
     .sendMessageText({
       typing_time: 3,
       to: "254713590577",
-      body: "Used config token!",
+      body: "New test!",
     })
     .then(({ data }) => console.log(data))
     .catch((err) => console.error(err));
@@ -230,7 +230,7 @@ client.connect();
 
 app.post("/webhook", (req, res) => {
   const messages = req.body.messages;
-  console.log("messages");
+  console.log("messages new test");
   console.log(messages);
   if (messages) {
     messages.forEach((message) => {
