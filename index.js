@@ -275,8 +275,10 @@ client.connect();
 
 app.post("/webhook", (req, res) => {
   const messages = req.body.messages;
-  console.log("messages new test - process.env.DATABASE_URL");
+  console.log("messages new");
   console.log(messages);
+  console.log("process.env.DATABASE_URL");
+  console.log(process.env.DATABASE_URL);
   if (messages) {
     messages.forEach((message) => {
       if (!message.from_me) {
