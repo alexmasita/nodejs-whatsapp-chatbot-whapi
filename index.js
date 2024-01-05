@@ -210,6 +210,13 @@ app.post("/messages", handleNewMessages);
 const { Client } = require("pg");
 
 // Create a new client instance
+console.log("connection info");
+console.log(process.env.PG_HOST);
+console.log(process.env.PG_PORT);
+console.log(process.env.PG_USER);
+console.log(process.env.PG_PASSWOR);
+console.log(process.env.PG_DATABASE);
+
 const client = new Client({
   host: process.env.PG_HOST,
   port: process.env.PG_PORT,
