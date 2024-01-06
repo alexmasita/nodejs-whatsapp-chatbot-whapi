@@ -296,17 +296,17 @@ app.post("/webhook", (req, res) => {
           // Automatically respond with your detailed instructions
           console.log("incomingMessage.includes - entered");
           const responseMessage = `
-          🌟 Welcome to Donazy! 🌟
+🌟 Welcome to Donazy! 🌟
 
-          Simplify group donations on WhatsApp:
-          
-          1. Add Donazy as a WhatsApp contact.
-          2. Add Donazy to your group.
-          3. Click the auto-sent link.
-          4. Fill out and submit donation details.
-          5. Your group gets a donation link with instructions.
-          
-          For other queries, ask below. We're here to help! 💚🙌          
+Simplify group donations on WhatsApp:
+
+1. Add Donazy as a WhatsApp contact.
+2. Add Donazy to your group.
+3. Click the auto-sent link.
+4. Fill out and submit donation details.
+5. Your group gets a donation link with instructions.
+
+For other queries, ask below. We're here to help! 💚🙌          
 `;
 
           sendToNumberSdk(chat_id, responseMessage);
