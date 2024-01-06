@@ -194,18 +194,82 @@ const app = express();
 app.use(bodyParser.json());
 
 app.get("/", function (req, res) {
-  const sdk = require("api")("@whapi/v1.7.5#3kd0flqp105bl");
+  // const sdk = require("api")("@whapi/v1.7.5#3kd0flqp105bl");
 
-  sdk.auth(config.token);
-  sdk
-    .sendMessageText({
-      typing_time: 3,
-      to: "254713590577",
-      body: "New test!",
-    })
-    .then(({ data }) => console.log(data))
-    .catch((err) => console.error(err));
-  res.send("Bot is running");
+  // sdk.auth(config.token);
+  // sdk
+  //   .sendMessageText({
+  //     typing_time: 3,
+  //     to: "254713590577",
+  //     body: "New test!",
+  //   })
+  //   .then(({ data }) => console.log(data))
+  //   .catch((err) => console.error(err));
+  // res.send("Bot is running");
+  const htmlContent = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donazy - Revolutionizing Group Donations on WhatsApp</title>
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        text-align: center;
+        max-width: 600px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      p {
+        color: #666;
+        line-height: 1.5;
+      }
+
+      .connect-button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4CAF50;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 0 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Donazy</h1>
+      <p>The ultimate solution for seamless and efficient group donations on WhatsApp!</p>
+      <p>Are you tired of the chaos and inefficiency surrounding donation management in your WhatsApp groups? Look no further – Donazy is here to revolutionize the way you handle group contributions!</p>
+      <a href="https://wa.me/254797727587" class="connect-button">Connect with Donazy on WhatsApp</a>
+    </div>
+  </body>
+  </html>
+`;
+
+  res.send(htmlContent);
 });
 
 app.post("/messages", handleNewMessages);
