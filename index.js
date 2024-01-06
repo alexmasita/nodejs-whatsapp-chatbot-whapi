@@ -5,7 +5,7 @@ const fetch = require("node-fetch");
 const FormData = require("form-data");
 const config = require("./config.js");
 const addMessage = require("./methods.js");
-const sendToNumber = require("./sendToNumber.js");
+const sendToNumberSdk = require("./sendToNumberSdk.js");
 
 require("dotenv").config();
 
@@ -305,7 +305,7 @@ Donazy is designed to simplify group donations on WhatsApp. Here's how it can as
 If your needs extend beyond group donation management on WhatsApp, Donazy may not be the ideal solution. However, if you believe we can still assist you, please feel free to elaborate on your query below. We're here to help! 💚🙌
 `;
 
-          sendToNumber(chat_id, responseMessage);
+          sendToNumberSdk(chat_id, responseMessage);
         } else {
           // If the message doesn't match, wait for a live agent to respond
           // You can implement further actions or alert mechanisms here
