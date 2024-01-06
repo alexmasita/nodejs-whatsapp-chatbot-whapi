@@ -264,7 +264,7 @@ app.get("/", function (req, res) {
       <h1>Donazy</h1>
       <p>The ultimate solution for seamless and efficient group donations on WhatsApp!</p>
       <p>Are you tired of the chaos and inefficiency surrounding donation management in your WhatsApp groups? Look no further – Donazy is here to revolutionize the way you handle group contributions!</p>
-      <a href="https://wa.me/254797277587?text=Hello%20Donazy!%20I%20am%20interested%20in%20managing%20group%20donations%20and%20would%20like%20to%20add%20you%20to%20my%20WhatsApp%20group.%20Can%20you%20guide%20me%20on%20the%20next%20steps%3F
+      <a href="https://wa.me/254797727587?text=Hello%20Donazy!%20I%20am%20interested%20in%20managing%20group%20donations%20and%20would%20like%20to%20add%20you%20to%20my%20WhatsApp%20group.%20Can%20you%20guide%20me%20on%20the%20next%20steps%3F
       " class="connect-button">Connect with Donazy on WhatsApp</a>
     </div>
   </body>
