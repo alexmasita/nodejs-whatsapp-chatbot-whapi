@@ -5,6 +5,7 @@ const fetch = require("node-fetch");
 const FormData = require("form-data");
 const config = require("./config.js");
 const addMessage = require("./methods.js");
+const sendToNumber = require("./sendToNumber.js");
 
 require("dotenv").config();
 
@@ -263,7 +264,8 @@ app.get("/", function (req, res) {
       <h1>Donazy</h1>
       <p>The ultimate solution for seamless and efficient group donations on WhatsApp!</p>
       <p>Are you tired of the chaos and inefficiency surrounding donation management in your WhatsApp groups? Look no further – Donazy is here to revolutionize the way you handle group contributions!</p>
-      <a href="https://wa.me/254797727587" class="connect-button">Connect with Donazy on WhatsApp</a>
+      <a href="https://wa.me/254797277587?text=Hello%20Donazy!%20I%20am%20interested%20in%20managing%20group%20donations%20and%20would%20like%20to%20add%20you%20to%20my%20WhatsApp%20group.%20Can%20you%20guide%20me%20on%20the%20next%20steps%3F
+      " class="connect-button">Connect with Donazy on WhatsApp</a>
     </div>
   </body>
   </html>
@@ -283,6 +285,30 @@ app.post("/webhook", (req, res) => {
       if (!message.from_me) {
         const chat_id = message.chat_id.split("@")[0]; // Extracting phone number from chat_id
         const text = message.text.body;
+        const incomingMessage = text.toLowerCase();
+
+        if (incomingMessage.includes("hello donazy")) {
+          // Automatically respond with your detailed instructions
+          const responseMessage = `
+🌟 Thank you for visiting Donazy! 🌟
+
+Donazy is designed to simplify group donations on WhatsApp. Here's how it can assist you:
+
+1. Add Donazy as a contact on your WhatsApp.
+2. Then add Donazy as a participant to your group.
+3. On the secure page, fill out your donation details and submit.
+4. Receive an automatic welcome message to your WhatsApp number with a link. Click the link.
+5. After submission, your group will receive a donation link.
+
+If your needs extend beyond group donation management on WhatsApp, Donazy may not be the ideal solution. However, if you believe we can still assist you, please feel free to elaborate on your query below. We're here to help! 💚🙌
+`;
+
+          sendToNumber(chat_id, responseMessage);
+        } else {
+          // If the message doesn't match, wait for a live agent to respond
+          // You can implement further actions or alert mechanisms here
+          console.log("Waiting for a live agent to respond.");
+        }
 
         console.log(`Received message from ${chat_id}: ${text}`);
         // Further processing: Database insertion, email forwarding, etc.
