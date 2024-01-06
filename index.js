@@ -286,9 +286,11 @@ app.post("/webhook", (req, res) => {
         const chat_id = message.chat_id.split("@")[0]; // Extracting phone number from chat_id
         const text = message.text.body;
         const incomingMessage = text.toLowerCase();
-
+        console.log("incomingMessage");
+        console.log(incomingMessage);
         if (incomingMessage.includes("hello donazy")) {
           // Automatically respond with your detailed instructions
+          console.log("incomingMessage.includes - entered");
           const responseMessage = `
 🌟 Thank you for visiting Donazy! 🌟
 
