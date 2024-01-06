@@ -1,4 +1,6 @@
+const config = require("./config.js");
 const sdk = require("api")("@whapi/v1.7.5#3kd0flqp105bl");
+
 sdk.auth(config.token);
 
 function sendToNumberSdk(to, body) {
