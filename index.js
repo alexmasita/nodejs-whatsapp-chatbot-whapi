@@ -281,7 +281,11 @@ app.post("/webhook", (req, res) => {
   console.log("process.env.DATABASE_URL");
   console.log(process.env.DATABASE_URL);
   if (messages) {
+    console.log("messages");
+    console.log(messages);
     messages.forEach((message) => {
+      console.log("messages for each entered - message");
+      console.log(message);
       if (!message.from_me) {
         const chat_id = message.chat_id.split("@")[0]; // Extracting phone number from chat_id
         const text = message.text.body;

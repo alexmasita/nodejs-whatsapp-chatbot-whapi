@@ -4,6 +4,8 @@ const sdk = require("api")("@whapi/v1.7.5#3kd0flqp105bl");
 sdk.auth(config.token);
 
 function sendToNumberSdk(to, body) {
+  console.log("sendToNumberSdk - to");
+  console.log(to);
   sdk
     .sendMessageText({
       typing_time: 3,
