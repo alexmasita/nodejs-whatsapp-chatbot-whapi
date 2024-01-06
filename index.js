@@ -296,17 +296,17 @@ app.post("/webhook", (req, res) => {
           // Automatically respond with your detailed instructions
           console.log("incomingMessage.includes - entered");
           const responseMessage = `
-🌟 Thank you for visiting Donazy! 🌟
+          🌟 Welcome to Donazy! 🌟
 
-Donazy is designed to simplify group donations on WhatsApp. Here's how it can assist you:
-
-1. Add Donazy as a contact on your WhatsApp.
-2. Then add Donazy as a participant to your group.
-3. On the secure page, fill out your donation details and submit.
-4. Receive an automatic welcome message to your WhatsApp number with a link. Click the link.
-5. After submission, your group will receive a donation link.
-
-If your needs extend beyond group donation management on WhatsApp, Donazy may not be the ideal solution. However, if you believe we can still assist you, please feel free to elaborate on your query below. We're here to help! 💚🙌
+          Simplify group donations on WhatsApp:
+          
+          1. Add Donazy as a WhatsApp contact.
+          2. Add Donazy to your group.
+          3. Click the auto-sent link.
+          4. Fill out and submit donation details.
+          5. Your group gets a donation link with instructions.
+          
+          For other queries, ask below. We're here to help! 💚🙌          
 `;
 
           sendToNumberSdk(chat_id, responseMessage);
