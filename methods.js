@@ -4,13 +4,23 @@ require("dotenv").config();
 // Create a new client instance
 console.log("connection info - process.env.DATABASE_URL");
 console.log(process.env.DATABASE_URL);
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-    require: process.env.NODE_ENV === "production" ? true : false,
-  },
-});
+let client = null;
+if (process.env.NODE_ENV === "production") {
+  console.log("entered production");
+  client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+      require: process.env.NODE_ENV === "production" ? true : false,
+    },
+  });
+} else {
+  console.log("entered development");
+  client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: false,
+  });
+}
 
 // Connect to the database
 client.connect();
