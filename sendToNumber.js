@@ -3,7 +3,7 @@ const config = require("./config.js");
 
 function sendToNumber(to, body) {
   const data = {
-    to: `${to}@s.whatsapp.net`,
+    to,
     body,
     typing_time: 4,
     view_once: true,
