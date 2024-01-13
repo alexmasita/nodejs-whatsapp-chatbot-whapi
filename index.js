@@ -278,13 +278,14 @@ app.post("/messages", handleNewMessages);
 
 app.post("/webhook", (req, res) => {
   const messages = req.body.messages;
-  console.log("process.env.DATABASE_URL");
+  const groups = req.body.groups;
+  console.log("process.env.DATABASE_URL - local");
   console.log(process.env.DATABASE_URL);
   if (messages) {
     console.log("messages");
     console.log(messages);
     messages.forEach((message) => {
-      console.log("messages for each entered-message");
+      console.log("messages for each entered-message - local");
       console.log(message);
       if (!message.from_me) {
         const chat_id = message.chat_id.split("@")[0]; // Extracting phone number from chat_id
@@ -300,8 +301,8 @@ app.post("/webhook", (req, res) => {
 
 Simplify group donations on WhatsApp:
 
-1. Add Donazy as a WhatsApp contact.
-2. Add Donazy to your group.
+1. Save this business number to contacts.
+2. Add contact number to your group.
 3. Click the auto-sent link.
 4. Fill out and submit donation details.
 5. Your group gets a donation link with instructions.
@@ -318,7 +319,19 @@ For other queries, ask below. We're here to help! 💚🙌
 
         console.log(`Received message from ${chat_id}: ${text}`);
         // Further processing: Database insertion, email forwarding, etc.
-        addMessage(chat_id, text);
+        //addMessage(chat_id, text);
+      }
+    });
+  } else if (groups) {
+    groups.forEach((group) => {
+      if (!group.created_by) {
+        const chat_id = group.chat_id.split("@")[0]; // Extracting phone number from chat_id
+        const created_by = group.created_by;
+        const responseMessage = "";
+        //sendToNumberSdk(created_by, responseMessage);
+        console.log(`Received message from ${chat_id}: ${text}`);
+        // Further processing: Database insertion, email forwarding, etc.
+        //addMessage(chat_id, text);
       }
     });
   } else {
