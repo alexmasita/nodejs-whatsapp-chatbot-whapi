@@ -51,13 +51,17 @@ async function ensureTableSchema(
 
     if (!tableExists) {
       // Table does not exist, create it
+      console.log("before create table");
       await createTable(
         tableName,
         columnDataTypes,
         primaryKey,
         tableConstraints
       );
+      console.log("after create table");
     } else {
+      console.log("after create table else");
+
       // Fetch existing table structure
       const existingColumns = await db.any(
         `SELECT * FROM ${tableName} LIMIT 0`

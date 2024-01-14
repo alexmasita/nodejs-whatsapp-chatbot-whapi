@@ -1,7 +1,6 @@
 const express = require("express");
 // const ejs = require("ejs");
 // const pgp = require("pg-promise")();
-const authRouter = require("./routes/auth");
 const db = require("./db"); // Adjust the path accordingly
 
 const app = express();
@@ -19,7 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 // Set up your routes
 const routes = require("./routes");
 app.use("/", routes);
-app.use("/auth", authRouter);
 
 process.on("SIGINT", () => {
   db.closeDatabase();

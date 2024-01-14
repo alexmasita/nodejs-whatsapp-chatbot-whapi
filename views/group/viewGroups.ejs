@@ -1,0 +1,55 @@
+<!-- views/viewGroups.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Groups</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f5f5f5;
+        text-align: center;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li {
+        background-color: #fff;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        width: 45%;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>All Groups</h1>
+    <!-- Display all groups in a table or list -->
+    <% if (Array.isArray(groups) && groups.length > 0) { %>
+    <ul>
+      <% groups.forEach(group => { %>
+      <li>
+        <strong>Name:</strong> <%= group.your_name %> |
+        <strong>Description:</strong> <%= group.description %> |
+        <!-- Add more fields as needed -->
+      </li>
+      <% }); %>
+    </ul>
+    <% } else { %>
+    <p>No groups available.</p>
+    <% } %>
+  </body>
+</html>

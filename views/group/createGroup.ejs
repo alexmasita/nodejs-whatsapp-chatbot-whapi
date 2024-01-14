@@ -1,0 +1,78 @@
+<!-- views/createGroup.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Group</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f5f5f5;
+        text-align: center;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      form {
+        max-width: 400px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Create a New Group</h1>
+    <!-- Your form for creating a new group -->
+    <form action="/groups/create" method="POST">
+      <!-- Input fields for group details -->
+      <label for="your_name">Your Name:</label>
+      <input type="text" name="your_name" required />
+
+      <label for="your_phone_number">Your Phone Number:</label>
+      <input type="text" name="your_phone_number" required />
+
+      <label for="recipient_phone_number">Recipient Phone Number:</label>
+      <input type="text" name="recipient_phone_number" required />
+
+      <label for="description">Description:</label>
+      <input type="text" name="description" required />
+
+      <label for="chat_id">Chat ID:</label>
+      <input type="text" name="chat_id" required />
+
+      <button type="submit">Create Group</button>
+    </form>
+  </body>
+</html>
