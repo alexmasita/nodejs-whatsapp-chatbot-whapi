@@ -1,5 +1,6 @@
-const pgp = require("pg-promise")();
-const db = pgp(process.env.DATABASE_URL);
+// const pgp = require("pg-promise")();
+// const db = pgp(process.env.DATABASE_URL);
+const { dbInstance: db } = require("../../db");
 const ensureTableSchema = require("../../utils/ensureTableSchema"); // Adjust the path based on your actual structure
 
 const groupQueries = {

@@ -81,8 +81,9 @@ const groupController = {
 
   // Render a page to view all groups
   viewAllGroups: async (req, res) => {
-    const groups = await db.query(groupQueries.getAllGroups);
+    const groups = await groupQueries.getAllGroups();
     // res.render("/group/viewGroups", { groups });
+    console.log("groups object, ", groups);
     res.render(path.join(__dirname, "..", "views", "group", "viewGroups"), {
       groups,
     });

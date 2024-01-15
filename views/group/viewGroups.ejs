@@ -18,37 +18,42 @@
         color: #333;
       }
 
-      ul {
-        list-style: none;
-        padding: 0;
+      .group-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 10px;
+        text-align: left;
       }
 
-      li {
-        background-color: #fff;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 4px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        display: inline-block;
-        width: 45%;
-        text-align: left;
+      @media only screen and (min-width: 600px) {
+        .group-card {
+          display: flex;
+          justify-content: space-between;
+        }
       }
     </style>
   </head>
   <body>
     <h1>All Groups</h1>
-    <!-- Display all groups in a table or list -->
-    <% if (Array.isArray(groups) && groups.length > 0) { %>
-    <ul>
-      <% groups.forEach(group => { %>
-      <li>
-        <strong>Name:</strong> <%= group.your_name %> |
-        <strong>Description:</strong> <%= group.description %> |
+
+    <!-- Introduce log statements -->
+    <% console.log("Groups variable:") %> <% console.log(groups) %>
+
+    <!-- Display all groups in a card-like layout -->
+    <% if (Array.isArray(groups) && groups.length > 0) { %> <%
+    groups.forEach(group => { %>
+    <div class="group-card">
+      <div>
+        <strong>Your Name:</strong> <%= group.your_name %><br />
+        <strong>Your Phone:</strong> <%= group.your_phone_number %><br />
+        <strong>Recipient Phone:</strong> <%= group.recipient_phone_number %><br />
+        <strong>Description:</strong> <%= group.description %><br />
+        <strong>Chat ID:</strong> <%= group.chat_id %><br />
         <!-- Add more fields as needed -->
-      </li>
-      <% }); %>
-    </ul>
-    <% } else { %>
+      </div>
+    </div>
+    <% }); %> <% } else { %>
     <p>No groups available.</p>
     <% } %>
   </body>

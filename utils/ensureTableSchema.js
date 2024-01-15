@@ -1,7 +1,8 @@
 const pgp = require("pg-promise")();
 require("dotenv").config();
-const db = pgp(process.env.DATABASE_URL);
+// const db = pgp(process.env.DATABASE_URL);
 
+const { dbInstance: db } = require("../db");
 /**
  * Possible data types that can be passed into the function:
  * 'text', 'integer', 'bigint', 'serial', 'bigserial', 'smallint',
@@ -49,8 +50,8 @@ async function ensureTableSchema(
     const tableExists = await db.oneOrNone(
       `SELECT to_regclass('${tableName}') as table_name`
     );
-
-    if (!tableExists) {
+    console.log("tableExists", tableExists);
+    if (!tableExists.table_name) {
       // Table does not exist, create it
       await createTable(
         tableName,
@@ -204,6 +205,61 @@ async function ensureTableSchema(
 //     throw error;
 //   }
 // }
+// async function createTable(
+//   tableName,
+//   columnDataTypes = {},
+//   primaryKey = {},
+//   tableConstraints = []
+// ) {
+//   try {
+//     // Build the CREATE TABLE statement
+//     let createTableStatement = `CREATE TABLE ${tableName} (`;
+
+//     // Add columns and data types
+//     const columnDefinitions = [];
+//     for (const [column, dataType] of Object.entries(columnDataTypes)) {
+//       columnDefinitions.push(`${column} ${dataType}`);
+//     }
+//     createTableStatement += columnDefinitions.join(", ");
+
+//     // Add primary key
+//     const { columns: primaryKeyColumns, type: primaryKeyType } = primaryKey;
+//     if (
+//       primaryKeyColumns &&
+//       Array.isArray(primaryKeyColumns) &&
+//       primaryKeyColumns.length > 0
+//     ) {
+//       const primaryKeyConstraintColumns = primaryKeyColumns.join(", ");
+//       createTableStatement += `, PRIMARY KEY (${primaryKeyConstraintColumns})`;
+//     }
+
+//     createTableStatement += ")";
+
+//     // Execute the CREATE TABLE statement
+//     await db.none(createTableStatement);
+
+//     // Handle additional table constraints
+//     for (let constraint of tableConstraints) {
+//       const { type, columns, references } = constraint;
+//       if (type && columns) {
+//         // Build and execute the constraint statement
+//         let constraintStatement = `ALTER TABLE ${tableName} ADD CONSTRAINT ${type}_${columns.join(
+//           "_"
+//         )} ${type.toUpperCase()} (${columns.join(", ")}`;
+//         if (references && references.table && references.columns) {
+//           constraintStatement += ` REFERENCES ${
+//             references.table
+//           }(${references.columns.join(", ")})`;
+//         }
+//         constraintStatement += ")";
+//         await db.none(constraintStatement);
+//       }
+//     }
+//   } catch (error) {
+//     console.error(`Error creating table ${tableName}:`, error);
+//     throw error;
+//   }
+// }
 async function createTable(
   tableName,
   columnDataTypes = {},
@@ -212,26 +268,26 @@ async function createTable(
 ) {
   try {
     // Build the CREATE TABLE statement
-    let createTableStatement = `CREATE TABLE ${tableName} (`;
+    let createTableStatement = `CREATE TABLE IF NOT EXISTS ${tableName} (`;
 
     // Add columns and data types
     const columnDefinitions = [];
     for (const [column, dataType] of Object.entries(columnDataTypes)) {
       columnDefinitions.push(`${column} ${dataType}`);
     }
-    createTableStatement += columnDefinitions.join(", ");
 
     // Add primary key
-    const { columns: primaryKeyColumns, type: primaryKeyType } = primaryKey;
+    const { columns: primaryKeyColumns } = primaryKey;
     if (
       primaryKeyColumns &&
       Array.isArray(primaryKeyColumns) &&
       primaryKeyColumns.length > 0
     ) {
       const primaryKeyConstraintColumns = primaryKeyColumns.join(", ");
-      createTableStatement += `, PRIMARY KEY (${primaryKeyConstraintColumns})`;
+      columnDefinitions.push(`PRIMARY KEY (${primaryKeyConstraintColumns})`);
     }
 
+    createTableStatement += columnDefinitions.join(", ");
     createTableStatement += ")";
 
     // Execute the CREATE TABLE statement
@@ -240,7 +296,7 @@ async function createTable(
     // Handle additional table constraints
     for (let constraint of tableConstraints) {
       const { type, columns, references } = constraint;
-      if (type && columns) {
+      if (type && columns && type.toUpperCase() !== "PRIMARY KEY") {
         // Build and execute the constraint statement
         let constraintStatement = `ALTER TABLE ${tableName} ADD CONSTRAINT ${type}_${columns.join(
           "_"

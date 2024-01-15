@@ -1,4 +1,5 @@
-const db = require("..");
+// const db = require("..");
+const { dbInstance: db } = require("../../db");
 
 const verificationQueries = {
   // SQL query to store a verification code
