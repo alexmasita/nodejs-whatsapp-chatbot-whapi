@@ -37,6 +37,7 @@ const db = pgp(process.env.DATABASE_URL);
  * @param {Array<Object>} tableConstraints - An array of objects specifying additional table constraints.
  * @returns {Promise<void>} - Resolves after ensuring the schema.
  */
+
 async function ensureTableSchema(
   tableName,
   columnDataTypes = {},
@@ -45,13 +46,11 @@ async function ensureTableSchema(
 ) {
   try {
     // Check if the table exists
-    console.log("check tablename: ", tableName);
-    const tableExistsQuery = `SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '${tableName}')`;
-    const tableExists = await db.oneOrNone(tableExistsQuery);
-    console.log("check tableExists: ", tableExists);
+    const tableExists = await db.oneOrNone(
+      `SELECT to_regclass('${tableName}') as table_name`
+    );
 
-    if (!tableExists.exists) {
-      console.log("!tableExists");
+    if (!tableExists) {
       // Table does not exist, create it
       await createTable(
         tableName,
@@ -60,30 +59,25 @@ async function ensureTableSchema(
         tableConstraints
       );
     } else {
-      console.log("tableExists");
       // Fetch existing table structure
       const existingColumns = await db.any(
-        `SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1`,
-        [tableName]
+        `SELECT column_name FROM information_schema.columns WHERE table_name = '${tableName}'`
       );
-
       const existingColumnNames = existingColumns.map(
         (column) => column.column_name
       );
 
       // Check if the columns in the existing table match the specified data types
       for (const [column, dataType] of Object.entries(columnDataTypes)) {
-        // If the column doesn't exist or has a different data type, alter the table
-        if (
-          !existingColumnNames.includes(column) ||
-          existingColumns.find((col) => col.column_name === column)
-            ?.data_type !== dataType
-        ) {
+        // If the column doesn't exist, alter the table to add it
+        if (!existingColumnNames.includes(column)) {
           await db.none(
             `ALTER TABLE ${tableName} ADD COLUMN ${column} ${dataType}`
           );
         }
       }
+
+      // Handle other cases, such as changing data types, based on your requirements.
 
       // Handle primary key
       const { columns: primaryKeyColumns, type: primaryKeyType } = primaryKey;
@@ -93,25 +87,33 @@ async function ensureTableSchema(
         primaryKeyColumns.length > 0
       ) {
         // Check if the specified primary key columns exist in the table
-        const missingPrimaryKeys = primaryKeyColumns.filter(
-          (primaryKeyColumn) => !existingColumnNames.includes(primaryKeyColumn)
-        );
-
-        if (missingPrimaryKeys.length > 0) {
-          // Add the missing primary key columns
-          for (const primaryKeyColumn of missingPrimaryKeys) {
-            const dataType = primaryKeyType || "text";
+        for (const primaryKeyColumn of primaryKeyColumns) {
+          if (!existingColumnNames.includes(primaryKeyColumn)) {
+            // Add the primary key columns if they don't exist
+            const dataType = primaryKeyType || "text"; // Use specified data type or default to 'text'
             await db.none(
               `ALTER TABLE ${tableName} ADD COLUMN ${primaryKeyColumn} ${dataType}`
             );
           }
+        }
 
-          // Set the new composite primary key constraint
-          const primaryKeyConstraintColumns = primaryKeyColumns.join(", ");
+        // Remove previous primary keys
+        const previousPrimaryKeys = existingColumnNames.filter(
+          (column) =>
+            existingColumns[0][column] === "YES" &&
+            !primaryKeyColumns.includes(column)
+        );
+        for (const previousPrimaryKey of previousPrimaryKeys) {
           await db.none(
-            `ALTER TABLE ${tableName} ADD PRIMARY KEY (${primaryKeyConstraintColumns})`
+            `ALTER TABLE ${tableName} DROP CONSTRAINT ${tableName}_${previousPrimaryKey}_pkey`
           );
         }
+
+        // Set the new composite primary key constraint
+        const primaryKeyConstraintColumns = primaryKeyColumns.join(", ");
+        await db.none(
+          `ALTER TABLE ${tableName} ADD PRIMARY KEY (${primaryKeyConstraintColumns})`
+        );
       }
 
       // Handle additional table constraints
@@ -131,8 +133,6 @@ async function ensureTableSchema(
           await db.none(constraintStatement);
         }
       }
-
-      // You may want to handle other cases, such as changing data types, based on your requirements.
     }
   } catch (error) {
     console.error(`Error ensuring table schema for ${tableName}:`, error);
