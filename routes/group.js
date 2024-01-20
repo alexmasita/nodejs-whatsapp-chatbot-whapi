@@ -2,20 +2,49 @@
 const express = require("express");
 const router = express.Router();
 const groupController = require("../controllers/groupController");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 // Create a new group
-router.get("/groups/create", groupController.getCreateGroup);
-router.post("/groups/create", groupController.postCreateGroup);
+router.get(
+  "/create",
+  authMiddleware.isAuthenticated,
+  groupController.getCreateGroup
+);
+router.post(
+  "/create",
+  authMiddleware.isAuthenticated,
+  groupController.postCreateGroup
+);
 
 // View all groups
-router.get("/groups/view", groupController.viewAllGroups);
+router.get(
+  "/view",
+  authMiddleware.isAuthenticated,
+  groupController.viewAllGroups
+);
 
 // Update a group
-router.get("/groups/update/:id", groupController.getUpdateGroup);
-router.post("/groups/update/:id", groupController.postUpdateGroup);
+router.get(
+  "/update/:id",
+  authMiddleware.isAuthenticated,
+  groupController.getUpdateGroup
+);
+router.post(
+  "/update/:id",
+  authMiddleware.isAuthenticated,
+  groupController.postUpdateGroup
+);
 
 // Delete a group
-router.get("/groups/delete/:id", groupController.getDeleteGroup);
-router.post("/groups/delete/:id", groupController.postDeleteGroup);
+router.get(
+  "/delete/:id",
+  authMiddleware.isAuthenticated,
+  groupController.getDeleteGroup
+);
 
+router.post(
+  "/delete/:id",
+  authMiddleware.isAuthenticated,
+  groupController.postDeleteGroup
+);
 module.exports = router;

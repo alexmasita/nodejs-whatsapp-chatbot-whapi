@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/authMiddleware");
+const authenticationService = require("../utils/authenticationService");
 const verificationController = require("../controllers/verificationController");
+const phoneNumberUtils = require("../utils/phoneNumberUtils");
 
 // Route to store a verification code (requires authentication)
-router.post("/store", authMiddleware.authenticate, async (req, res) => {
+router.post("/store", authMiddleware.isAuthenticated, async (req, res) => {
   try {
     const { phoneNumber, code } = req.body;
 
@@ -21,7 +23,7 @@ router.post("/store", authMiddleware.authenticate, async (req, res) => {
 // Route to retrieve a verification code (requires authentication)
 router.get(
   "/retrieve/:phoneNumber",
-  authMiddleware.authenticate,
+  authMiddleware.isAuthenticated,
   async (req, res) => {
     try {
       const phoneNumber = req.params.phoneNumber;
@@ -40,11 +42,18 @@ router.get(
 );
 
 // Route to send a verification code (requires authentication)
-router.post("/send-code", authMiddleware.authenticate, async (req, res) => {
+router.post("/send-code", async (req, res) => {
   try {
+    const { internationalCode, phoneNumber } = req.body;
+    const fullPhoneNumber = phoneNumberUtils.concatenatePhoneNumber(
+      internationalCode,
+      phoneNumber
+    );
     console.log("send-code called req obj");
     console.log(req);
-    await authController.sendVerificationCode(req, res);
+    console.log("send-code called fullPhoneNumber: ", fullPhoneNumber);
+    console.log(req);
+    await authenticationService.sendVerificationCode(fullPhoneNumber);
   } catch (error) {
     console.error("Error sending verification code:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -52,7 +61,7 @@ router.post("/send-code", authMiddleware.authenticate, async (req, res) => {
 });
 
 // Route to verify the code (requires authentication)
-router.post("/verify-code", authMiddleware.authenticate, async (req, res) => {
+router.post("/verify-code", async (req, res) => {
   try {
     const { phoneNumber, code } = req.body;
 

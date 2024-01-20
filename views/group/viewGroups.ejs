@@ -1,4 +1,4 @@
-<!-- views/viewGroups.ejs -->
+<!-- views/group/viewGroups.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,18 +24,38 @@
         margin-bottom: 20px;
         padding: 10px;
         text-align: left;
+        display: flex;
+        justify-content: space-between;
       }
 
-      @media only screen and (min-width: 600px) {
-        .group-card {
-          display: flex;
-          justify-content: space-between;
-        }
+      .group-actions {
+        display: flex;
+      }
+
+      .group-actions button {
+        margin-left: 10px;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+
+      #createGroupButton {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 20px;
       }
     </style>
   </head>
   <body>
     <h1>All Groups</h1>
+
+    <!-- Button for creating a new group -->
+    <button id="createGroupButton" onclick="createGroup()">
+      Create New Group
+    </button>
 
     <!-- Introduce log statements -->
     <% console.log("Groups variable:") %> <% console.log(groups) %>
@@ -52,9 +72,30 @@
         <strong>Chat ID:</strong> <%= group.chat_id %><br />
         <!-- Add more fields as needed -->
       </div>
+      <div class="group-actions">
+        <button onclick="editGroup('<%= group.id %>')">Edit</button>
+        <button onclick="deleteGroup('<%= group.id %>')">Delete</button>
+      </div>
     </div>
     <% }); %> <% } else { %>
     <p>No groups available.</p>
     <% } %>
+
+    <script>
+      function createGroup() {
+        // Redirect to the create group route
+        window.location.href = "/groups/create";
+      }
+
+      function editGroup(groupId) {
+        // Redirect to the update route with the group ID
+        window.location.href = `/groups/update/${groupId}`;
+      }
+
+      function deleteGroup(groupId) {
+        // Redirect to the delete route with the group ID
+        window.location.href = `/groups/delete/${groupId}`;
+      }
+    </script>
   </body>
 </html>

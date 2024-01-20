@@ -58,13 +58,23 @@
     <form action="/groups/create" method="POST">
       <!-- Input fields for group details -->
       <label for="your_name">Your Name:</label>
-      <input type="text" name="your_name" required />
+      <input type="text" name="your_name" required value="<%= user.name %>" />
 
       <label for="your_phone_number">Your Phone Number:</label>
-      <input type="text" name="your_phone_number" required />
+      <input
+        type="text"
+        name="your_phone_number"
+        value="<%= user.phone_number %>"
+        readonly
+      />
 
       <label for="recipient_phone_number">Recipient Phone Number:</label>
-      <input type="text" name="recipient_phone_number" required />
+      <input
+        type="text"
+        name="recipient_phone_number"
+        id="recipient_phone_number"
+        required
+      />
 
       <label for="description">Description:</label>
       <input type="text" name="description" required />
@@ -74,5 +84,14 @@
 
       <button type="submit">Create Group</button>
     </form>
+    <script>
+      function stripNonNumericAndSpaces() {
+        const recipientPhoneNumberField = document.getElementById(
+          "recipient_phone_number"
+        );
+        recipientPhoneNumberField.value =
+          recipientPhoneNumberField.value.replace(/[^0-9 ]/g, "");
+      }
+    </script>
   </body>
 </html>

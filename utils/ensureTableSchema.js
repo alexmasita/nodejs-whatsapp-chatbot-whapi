@@ -50,7 +50,7 @@ async function ensureTableSchema(
     const tableExists = await db.oneOrNone(
       `SELECT to_regclass('${tableName}') as table_name`
     );
-    console.log("tableExists", tableExists);
+
     if (!tableExists.table_name) {
       // Table does not exist, create it
       await createTable(
@@ -62,78 +62,35 @@ async function ensureTableSchema(
     } else {
       // Fetch existing table structure
       const existingColumns = await db.any(
-        `SELECT column_name FROM information_schema.columns WHERE table_name = '${tableName}'`
-      );
-      const existingColumnNames = existingColumns.map(
-        (column) => column.column_name
+        `SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '${tableName}'`
       );
 
-      // Check if the columns in the existing table match the specified data types
+      // Compare existing columns with provided columnDataTypes
+      const changes = [];
       for (const [column, dataType] of Object.entries(columnDataTypes)) {
-        // If the column doesn't exist, alter the table to add it
-        if (!existingColumnNames.includes(column)) {
-          await db.none(
-            `ALTER TABLE ${tableName} ADD COLUMN ${column} ${dataType}`
-          );
+        const existingColumn = existingColumns.find(
+          (ec) => ec.column_name === column
+        );
+
+        // If the column doesn't exist or data type is different, mark it for change
+        if (!existingColumn || existingColumn.data_type !== dataType) {
+          changes.push(column);
         }
       }
 
-      // Handle other cases, such as changing data types, based on your requirements.
-
-      // Handle primary key
-      const { columns: primaryKeyColumns, type: primaryKeyType } = primaryKey;
-      if (
-        primaryKeyColumns &&
-        Array.isArray(primaryKeyColumns) &&
-        primaryKeyColumns.length > 0
-      ) {
-        // Check if the specified primary key columns exist in the table
-        for (const primaryKeyColumn of primaryKeyColumns) {
-          if (!existingColumnNames.includes(primaryKeyColumn)) {
-            // Add the primary key columns if they don't exist
-            const dataType = primaryKeyType || "text"; // Use specified data type or default to 'text'
-            await db.none(
-              `ALTER TABLE ${tableName} ADD COLUMN ${primaryKeyColumn} ${dataType}`
-            );
-          }
-        }
-
-        // Remove previous primary keys
-        const previousPrimaryKeys = existingColumnNames.filter(
-          (column) =>
-            existingColumns[0][column] === "YES" &&
-            !primaryKeyColumns.includes(column)
-        );
-        for (const previousPrimaryKey of previousPrimaryKeys) {
-          await db.none(
-            `ALTER TABLE ${tableName} DROP CONSTRAINT ${tableName}_${previousPrimaryKey}_pkey`
-          );
-        }
-
-        // Set the new composite primary key constraint
-        const primaryKeyConstraintColumns = primaryKeyColumns.join(", ");
-        await db.none(
-          `ALTER TABLE ${tableName} ADD PRIMARY KEY (${primaryKeyConstraintColumns})`
+      if (changes.length > 0) {
+        // Drop the table and recreate it with the new schema
+        await db.none(`DROP TABLE IF EXISTS ${tableName}`);
+        await createTable(
+          tableName,
+          columnDataTypes,
+          primaryKey,
+          tableConstraints
         );
       }
 
-      // Handle additional table constraints
-      for (const constraint of tableConstraints) {
-        const { type, columns, references } = constraint;
-        if (type && columns) {
-          // Build and execute the constraint statement
-          const constraintStatement = `ALTER TABLE ${tableName} ADD CONSTRAINT ${type}_${columns.join(
-            "_"
-          )} ${type.toUpperCase()} (${columns.join(", ")}`;
-          if (references && references.table && references.columns) {
-            constraintStatement += ` REFERENCES ${
-              references.table
-            }(${references.columns.join(", ")})`;
-          }
-          constraintStatement += ")";
-          await db.none(constraintStatement);
-        }
-      }
+      // Continue with other operations if the table schema is unchanged
+      // ... (rest of the existing code)
     }
   } catch (error) {
     console.error(`Error ensuring table schema for ${tableName}:`, error);
@@ -150,116 +107,7 @@ async function ensureTableSchema(
  * @param {Array<Object>} tableConstraints - An array of objects specifying additional table constraints.
  * @returns {Promise<void>} - Resolves after creating the table.
  */
-// async function createTable(
-//   tableName,
-//   columnDataTypes = {},
-//   primaryKey = {},
-//   tableConstraints = []
-// ) {
-//   try {
-//     // Build the CREATE TABLE statement
-//     let createTableStatement = `CREATE TABLE ${tableName} (`;
 
-//     // Add columns and data types
-//     const columnDefinitions = [];
-//     for (const [column, dataType] of Object.entries(columnDataTypes)) {
-//       columnDefinitions.push(`${column} ${dataType}`);
-//     }
-//     createTableStatement += columnDefinitions.join(", ");
-
-//     // Add primary key
-//     const { columns: primaryKeyColumns, type: primaryKeyType } = primaryKey;
-//     if (
-//       primaryKeyColumns &&
-//       Array.isArray(primaryKeyColumns) &&
-//       primaryKeyColumns.length > 0
-//     ) {
-//       const primaryKeyConstraintColumns = primaryKeyColumns.join(", ");
-//       createTableStatement += `, PRIMARY KEY (${primaryKeyConstraintColumns})`;
-//     }
-
-//     createTableStatement += ")";
-
-//     // Execute the CREATE TABLE statement
-//     await db.none(createTableStatement);
-
-//     // Handle additional table constraints
-//     for (const constraint of tableConstraints) {
-//       const { type, columns, references } = constraint;
-//       if (type && columns) {
-//         // Build and execute the constraint statement
-//         const constraintStatement = `ALTER TABLE ${tableName} ADD CONSTRAINT ${type}_${columns.join(
-//           "_"
-//         )} ${type.toUpperCase()} (${columns.join(", ")}`;
-//         if (references && references.table && references.columns) {
-//           constraintStatement += ` REFERENCES ${
-//             references.table
-//           }(${references.columns.join(", ")})`;
-//         }
-//         constraintStatement += ")";
-//         await db.none(constraintStatement);
-//       }
-//     }
-//   } catch (error) {
-//     console.error(`Error creating table ${tableName}:`, error);
-//     throw error;
-//   }
-// }
-// async function createTable(
-//   tableName,
-//   columnDataTypes = {},
-//   primaryKey = {},
-//   tableConstraints = []
-// ) {
-//   try {
-//     // Build the CREATE TABLE statement
-//     let createTableStatement = `CREATE TABLE ${tableName} (`;
-
-//     // Add columns and data types
-//     const columnDefinitions = [];
-//     for (const [column, dataType] of Object.entries(columnDataTypes)) {
-//       columnDefinitions.push(`${column} ${dataType}`);
-//     }
-//     createTableStatement += columnDefinitions.join(", ");
-
-//     // Add primary key
-//     const { columns: primaryKeyColumns, type: primaryKeyType } = primaryKey;
-//     if (
-//       primaryKeyColumns &&
-//       Array.isArray(primaryKeyColumns) &&
-//       primaryKeyColumns.length > 0
-//     ) {
-//       const primaryKeyConstraintColumns = primaryKeyColumns.join(", ");
-//       createTableStatement += `, PRIMARY KEY (${primaryKeyConstraintColumns})`;
-//     }
-
-//     createTableStatement += ")";
-
-//     // Execute the CREATE TABLE statement
-//     await db.none(createTableStatement);
-
-//     // Handle additional table constraints
-//     for (let constraint of tableConstraints) {
-//       const { type, columns, references } = constraint;
-//       if (type && columns) {
-//         // Build and execute the constraint statement
-//         let constraintStatement = `ALTER TABLE ${tableName} ADD CONSTRAINT ${type}_${columns.join(
-//           "_"
-//         )} ${type.toUpperCase()} (${columns.join(", ")}`;
-//         if (references && references.table && references.columns) {
-//           constraintStatement += ` REFERENCES ${
-//             references.table
-//           }(${references.columns.join(", ")})`;
-//         }
-//         constraintStatement += ")";
-//         await db.none(constraintStatement);
-//       }
-//     }
-//   } catch (error) {
-//     console.error(`Error creating table ${tableName}:`, error);
-//     throw error;
-//   }
-// }
 async function createTable(
   tableName,
   columnDataTypes = {},

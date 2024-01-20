@@ -4,46 +4,14 @@ const db = require("../db"); // Replace with the path to your db configuration f
 const path = require("path");
 
 const groupController = {
-  // Implementation for listing all groups using groupQueries.listGroups
-  //   listGroups: async (req, res) => {
-  //     try {
-  //       const groups = await groupQueries.listGroups();
-  //       res.render("groupList", { groups, user: req.user });
-  //     } catch (error) {
-  //       console.error("Error listing groups:", error);
-  //       res.status(500).send("Internal Server Error");
-  //     }
-  //   },
-
-  // Implementation for showing the edit form for a group
-  //   showEditForm: async (req, res) => {
-  //     try {
-  //       const groupId = req.params.groupId;
-  //       const group = await groupQueries.getGroupById(groupId);
-  //       res.render("groupEditForm", { group, user: req.user });
-  //     } catch (error) {
-  //       console.error("Error showing edit group form:", error);
-  //       res.status(500).send("Internal Server Error");
-  //     }
-  //   },
-
-  // Implementation for editing a group using groupQueries.editGroup
-  //   editGroup: async (req, res) => {
-  //     try {
-  //       const groupId = req.params.groupId;
-  //       const updatedData = req.body;
-  //       const updatedGroup = await groupQueries.editGroup(groupId, updatedData);
-  //       res.redirect("/groups");
-  //     } catch (error) {
-  //       console.error("Error editing group:", error);
-  //       res.status(500).send("Internal Server Error");
-  //     }
-  //   },
-
   // Render form to create a new group
   getCreateGroup: (req, res) => {
     //res.render("/group/createGroup");
-    res.render(path.join(__dirname, "..", "views", "group", "createGroup"));
+    console.log("getCreateGroup - req.user");
+    console.log(req.user);
+    res.render(path.join(__dirname, "..", "views", "group", "createGroup"), {
+      user: req.user,
+    });
   },
 
   // Handle submission of the create group form
@@ -61,13 +29,16 @@ const groupController = {
       // Validate the form data (you may add more validation as needed)
 
       // Insert the group into the database
-      const newGroup = await groupQueries.createGroup({
-        your_name,
-        your_phone_number,
-        recipient_phone_number,
-        description,
-        chat_id,
-      });
+      const newGroup = await groupQueries.createGroup(
+        {
+          your_name,
+          your_phone_number,
+          recipient_phone_number,
+          description,
+          chat_id,
+        },
+        req.user
+      );
 
       // Redirect to the view all groups page after creation
       res.redirect("/groups/view");
@@ -79,59 +50,107 @@ const groupController = {
     }
   },
 
+  // Render form to update a group
+  getUpdateGroup: async (req, res) => {
+    try {
+      const groupId = req.params.id;
+      console.log("get groupId");
+      console.log(groupId);
+
+      const group = await groupQueries.getGroupById(groupId);
+      // req.session.groupData = {
+      //   your_user_id: group.your_user_id,
+      // };
+
+      res.render(path.join(__dirname, "..", "views", "group", "updateGroup"), {
+        group,
+      });
+    } catch (error) {
+      console.error("Error fetching group details for update:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  },
+  // Handle submission of the update group form
+  postUpdateGroup: async (req, res) => {
+    try {
+      const groupId = req.params.id;
+      const updatedData = req.body;
+      console.log("get groupId");
+      console.log(groupId);
+      console.log("group - req.user.id");
+      console.log(req.user.id);
+
+      // Retrieve data from session storage
+      const groupData = {
+        your_user_id: req.user.id,
+      };
+      // Combine the data
+      const dataToSubmit = {
+        ...updatedData,
+        ...groupData,
+      };
+      // Perform the database update using the updateGroup query
+      const updatedGroup = await groupQueries.updateGroup(
+        groupId,
+        dataToSubmit
+      );
+
+      // Clear session storage after use if needed
+      //delete req.session.groupData;
+
+      // Redirect to the view all groups page after update
+      res.redirect("/groups/view");
+    } catch (error) {
+      console.error("Error updating group:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  },
+
   // Render a page to view all groups
   viewAllGroups: async (req, res) => {
     const groups = await groupQueries.getAllGroups();
     // res.render("/group/viewGroups", { groups });
     console.log("groups object, ", groups);
+    console.log("req.user in viewAllGroups", req.user);
     res.render(path.join(__dirname, "..", "views", "group", "viewGroups"), {
       groups,
+      user: req.user,
     });
-  },
-
-  // Render form to update a group
-  getUpdateGroup: async (req, res) => {
-    // Implement the logic to fetch group details based on the ID
-    // ...
-
-    //res.render("/group/updateGroup", { group });
-    res.render(path.join(__dirname, "..", "views", "group", "updateGroup"), {
-      group,
-    });
-  },
-
-  // Handle submission of the update group form
-  postUpdateGroup: async (req, res) => {
-    // Implement the logic to handle form submission and database update
-    // ...
-
-    // Redirect to the view all groups page after update
-    res.redirect("/groups/view");
   },
 
   // Render form to delete a group
   getDeleteGroup: async (req, res) => {
-    // Implement the logic to fetch group details based on the ID
+    try {
+      const groupId = req.params.id;
+      const group = await groupQueries.getGroupById(groupId);
 
-    //res.render("deleteGroup", { group });
-    res.render(path.join(__dirname, "..", "views", "group", "deleteGroup"), {
-      group,
-    });
+      res.render(path.join(__dirname, "..", "views", "group", "deleteGroup"), {
+        group,
+      });
+    } catch (error) {
+      console.error("Error fetching group details for deletion:", error);
+      res.status(500).send("Internal Server Error");
+    }
   },
 
   // Handle submission of the delete group form
   postDeleteGroup: async (req, res) => {
-    // Implement the logic to handle form submission and database deletion
-    // ...
+    try {
+      const groupId = req.params.id;
 
-    // Redirect to the view all groups page after deletion
-    //res.redirect("/group/viewGroups");
-    res.redirect("/groups/view");
+      // Perform the database deletion using the deleteGroup query
+      await groupQueries.deleteGroup(groupId);
+
+      // Redirect to the view all groups page after deletion
+      res.redirect("/groups/view");
+    } catch (error) {
+      console.error("Error deleting group:", error);
+      res.status(500).send("Internal Server Error");
+    }
   },
-
   // Implementation for adding an admin to a group by phone number
   addAdminToGroupByPhoneNumber: async (req, res) => {
-    const groupId = req.params.groupId;
+    const groupId = req.params.id;
     const phoneNumber = req.body.phoneNumber;
 
     try {
@@ -167,7 +186,7 @@ const groupController = {
 
   // Implementation for removing an admin from a group
   removeAdminFromGroup: async (req, res) => {
-    const groupId = req.params.groupId;
+    const groupId = req.params.id;
     const userId = req.params.userId;
 
     try {
