@@ -25,63 +25,56 @@ async function setupTables() {
       primaryKey: { columns: ["id"], type: "SERIAL" },
       tableConstraints: [],
     },
-    // Add more tables as needed
-    // {
-    //   tableName: "users",
-    //   columnDataTypes: {
-    //     id: "SERIAL PRIMARY KEY",
-    //     name: "VARCHAR(255)",
-    //     phone_number: "VARCHAR(15) UNIQUE",
-    //     is_deleted: "BOOLEAN DEFAULT false",
-    //   },
-    //   primaryKey: { columns: ["id"], type: "SERIAL" },
-    //   tableConstraints: [],
-    // },
-    // {
-    //   tableName: "groups",
-    //   columnDataTypes: {
-    //     id: "SERIAL PRIMARY KEY",
-    //     your_user_id: "INTEGER REFERENCES users(id)",
-    //     recipient_phone_number: "VARCHAR(15)",
-    //     description: "VARCHAR(255)",
-    //     chat_id: "VARCHAR(255)",
-    //     is_deleted: "BOOLEAN DEFAULT false",
-    //   },
-    //   primaryKey: { columns: ["id"], type: "SERIAL" },
-    //   tableConstraints: [],
-    // },
-    // {
-    //   tableName: "user_roles",
-    //   columnDataTypes: {
-    //     id: "SERIAL PRIMARY KEY",
-    //     user_id: "INTEGER REFERENCES users(id)",
-    //     group_id: "INTEGER REFERENCES groups(id)",
-    //     role: "VARCHAR(50) DEFAULT 'donor'",
-    //   },
-    //   primaryKey: { columns: ["user_id", "group_id"], type: "SERIAL" },
-    //   tableConstraints: [
-    //     { type: "PRIMARY KEY", columns: ["user_id", "group_id"] },
-    //   ],
-    // },
-    // {
-    //   tableName: "donations",
-    //   columnDataTypes: {
-    //     id: "SERIAL PRIMARY KEY",
-    //     user_id: "INTEGER REFERENCES users(id)",
-    //     group_id: "INTEGER REFERENCES groups(id)",
-    //     amount: "DECIMAL",
-    //     donation_date: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-    //     is_deleted: "BOOLEAN DEFAULT false",
-    //   },
-    //   primaryKey: { columns: ["id"], type: "SERIAL" },
-    //   tableConstraints: [],
-    // },
-    // {
-    //   tableName: 'another_table',
-    //   columnDataTypes: { ... },
-    //   primaryKey: { ... },
-    //   tableConstraints: [ ... ],
-    // },
+    {
+      tableName: "users",
+      columnDataTypes: {
+        id: "SERIAL",
+        name: "VARCHAR(255)",
+        phone_number: "VARCHAR(15) UNIQUE",
+        is_deleted: "BOOLEAN DEFAULT false",
+      },
+      primaryKey: { columns: ["id"], type: "SERIAL" },
+      tableConstraints: [],
+    },
+    {
+      tableName: "groups",
+      columnDataTypes: {
+        id: "SERIAL",
+        your_user_id: "INTEGER REFERENCES users(id)",
+        recipient_phone_number: "VARCHAR(15)",
+        description: "VARCHAR(255)",
+        chat_id: "VARCHAR(255)",
+        is_deleted: "BOOLEAN DEFAULT false",
+      },
+      primaryKey: { columns: ["id"], type: "SERIAL" },
+      tableConstraints: [],
+    },
+    {
+      tableName: "user_roles",
+      columnDataTypes: {
+        id: "SERIAL",
+        user_id: "INTEGER REFERENCES users(id)",
+        group_id: "INTEGER REFERENCES groups(id)",
+        role: "VARCHAR(50) DEFAULT 'donor'",
+      },
+      primaryKey: { columns: ["id"], type: "SERIAL" },
+      tableConstraints: [
+        { type: "PRIMARY KEY", columns: ["user_id", "group_id"] },
+      ],
+    },
+    {
+      tableName: "donations",
+      columnDataTypes: {
+        id: "SERIAL",
+        user_id: "INTEGER REFERENCES users(id)",
+        group_id: "INTEGER REFERENCES groups(id)",
+        amount: "DECIMAL",
+        donation_date: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+        is_deleted: "BOOLEAN DEFAULT false",
+      },
+      primaryKey: { columns: ["id"], type: "SERIAL" },
+      tableConstraints: [],
+    },
   ];
 
   // Use Promise.all to ensure all table schemas are checked/created

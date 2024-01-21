@@ -3,9 +3,9 @@ const userQueries = require("../db/queries/userQueries"); // Update the path acc
 const verificationQueries = require("../db/queries/verificationQueries");
 
 const authenticationService = {
-  sendVerificationCode: async (phoneNumber) => {
+  sendVerificationCode: async (phoneNumber, req) => {
     try {
-      const verificationCode = await sendWhatsAppVerification(phoneNumber);
+      const verificationCode = await sendWhatsAppVerification(phoneNumber, req);
 
       // Store the verification code securely (e.g., in-memory cache or database)
       await verificationQueries.insertOrUpdateVerificationCode(
