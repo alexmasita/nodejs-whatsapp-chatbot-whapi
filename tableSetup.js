@@ -1,7 +1,7 @@
 const ensureTableSchema = require("./utils/ensureTableSchema");
 
 async function setupTables() {
-  // Define the table schemas
+  // Define the table schemas - updated
   const tableSchemas = [
     {
       tableName: "users",
