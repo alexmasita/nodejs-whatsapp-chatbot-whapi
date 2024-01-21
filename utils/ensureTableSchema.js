@@ -79,9 +79,8 @@ async function ensureTableSchema(
       }
 
       if (changes.length > 0) {
-        // Drop the table and recreate it with the new schema
-        await db.none(`DROP TABLE IF EXISTS ${tableName}`);
-        await createTable(
+        // Recreate the table with the new schema
+        await recreateTable(
           tableName,
           columnDataTypes,
           primaryKey,
@@ -94,6 +93,25 @@ async function ensureTableSchema(
     }
   } catch (error) {
     console.error(`Error ensuring table schema for ${tableName}:`, error);
+    throw error;
+  }
+}
+
+// Function to recreate a table with a new schema
+async function recreateTable(
+  tableName,
+  columnDataTypes = {},
+  primaryKey = {},
+  tableConstraints = []
+) {
+  try {
+    // Drop the existing table with CASCADE to drop dependent objects
+    await db.none(`DROP TABLE IF EXISTS ${tableName} CASCADE`);
+
+    // Create the new table
+    await createTable(tableName, columnDataTypes, primaryKey, tableConstraints);
+  } catch (error) {
+    console.error(`Error recreating table ${tableName}:`, error);
     throw error;
   }
 }

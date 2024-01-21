@@ -1,30 +1,8 @@
-// tableSetup.js
 const ensureTableSchema = require("./utils/ensureTableSchema");
 
 async function setupTables() {
   // Define the table schemas
   const tableSchemas = [
-    {
-      tableName: "sessions",
-      columnDataTypes: {
-        sid: "VARCHAR(255)",
-        sess: "JSON NOT NULL",
-        expire: "TIMESTAMPTZ NOT NULL",
-      },
-      primaryKey: { columns: ["sid"], type: "VARCHAR(255)" },
-      tableConstraints: [],
-    },
-    {
-      tableName: "verification_codes",
-      columnDataTypes: {
-        id: "SERIAL",
-        phone_number: "VARCHAR(255) UNIQUE NOT NULL",
-        code: "VARCHAR(6) NOT NULL",
-        created_at: "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP",
-      },
-      primaryKey: { columns: ["id"], type: "SERIAL" },
-      tableConstraints: [],
-    },
     {
       tableName: "users",
       columnDataTypes: {
@@ -63,6 +41,27 @@ async function setupTables() {
       ],
     },
     {
+      tableName: "sessions",
+      columnDataTypes: {
+        sid: "VARCHAR(255)",
+        sess: "JSON NOT NULL",
+        expire: "TIMESTAMPTZ NOT NULL",
+      },
+      primaryKey: { columns: ["sid"], type: "VARCHAR(255)" },
+      tableConstraints: [],
+    },
+    {
+      tableName: "verification_codes",
+      columnDataTypes: {
+        id: "SERIAL",
+        phone_number: "VARCHAR(255) UNIQUE NOT NULL",
+        code: "VARCHAR(6) NOT NULL",
+        created_at: "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP",
+      },
+      primaryKey: { columns: ["id"], type: "SERIAL" },
+      tableConstraints: [],
+    },
+    {
       tableName: "donations",
       columnDataTypes: {
         id: "SERIAL",
@@ -77,17 +76,16 @@ async function setupTables() {
     },
   ];
 
-  // Use Promise.all to ensure all table schemas are checked/created
-  await Promise.all(
-    tableSchemas.map((schema) =>
-      ensureTableSchema(
-        schema.tableName,
-        schema.columnDataTypes,
-        schema.primaryKey,
-        schema.tableConstraints
-      )
-    )
-  );
+  // Loop through each table schema and ensure its schema
+  for (const schema of tableSchemas) {
+    await ensureTableSchema(
+      schema.tableName,
+      schema.columnDataTypes,
+      schema.primaryKey,
+      schema.tableConstraints
+    );
+    console.log(`Table schema ensured for ${schema.tableName}`);
+  }
 
   console.log("All table schemas ensured.");
 }
