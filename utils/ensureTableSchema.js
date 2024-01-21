@@ -39,6 +39,7 @@ const { dbInstance: db } = require("../db");
  * @returns {Promise<void>} - Resolves after ensuring the schema.
  */
 
+//Ensure table updated
 async function ensureTableSchema(
   tableName,
   columnDataTypes = {},
