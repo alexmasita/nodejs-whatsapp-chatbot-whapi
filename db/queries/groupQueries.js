@@ -3,7 +3,7 @@
 const { dbInstance: db } = require("../../db");
 const ensureTableSchema = require("../../utils/ensureTableSchema"); // Adjust the path based on your actual structure
 const userQueries = require("./userQueries");
-const userRolesQueries = require("./userRolesQueries");
+const groupMembershipsQueries = require("./groupMembershipsQueries");
 
 const groupQueries = {
   // Call ensureTableSchema before any CRUD operations
@@ -61,7 +61,7 @@ const groupQueries = {
 
       console.log("group_id: group.id", group.id);
 
-      await userRolesQueries.createUserRole(
+      await groupMembershipsQueries.createGroupMembership(
         {
           user_id: user.id,
           group_id: group.id,
@@ -84,11 +84,11 @@ const groupQueries = {
         groups.*,
         users.name AS your_name,
         users.phone_number AS your_phone_number,
-        user_roles.role
+        group_memberships.role
       FROM
         groups
         JOIN users ON groups.your_user_id = users.id
-        LEFT JOIN user_roles ON groups.id = user_roles.group_id
+        LEFT JOIN group_memberships ON groups.id = group_memberships.group_id
       WHERE
         groups.is_deleted = false
     `);
@@ -105,11 +105,11 @@ const groupQueries = {
       groups.*,
       users.name AS your_name,
       users.phone_number AS your_phone_number,
-      user_roles.role
+      group_memberships.role
     FROM
       groups
       LEFT JOIN users ON groups.your_user_id = users.id
-      LEFT JOIN user_roles ON groups.id = user_roles.group_id
+      LEFT JOIN group_memberships ON groups.id = group_memberships.group_id
     WHERE
       groups.id = $1 AND groups.is_deleted = false
   `,
@@ -150,7 +150,7 @@ const groupQueries = {
       );
 
       // Update user role information
-      await userRolesQueries.updateUserRole(
+      await groupMembershipsQueries.updateGroupMembership(
         {
           user_id: user.id,
           group_id: group.id,

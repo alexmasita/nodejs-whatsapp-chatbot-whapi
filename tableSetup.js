@@ -28,7 +28,7 @@ async function setupTables() {
       tableConstraints: [],
     },
     {
-      tableName: "user_roles",
+      tableName: "group_memberships",
       columnDataTypes: {
         id: "SERIAL",
         user_id: "INTEGER REFERENCES users(id)",
