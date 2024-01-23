@@ -27,11 +27,19 @@ router.post("/login", async function (req, res) {
   console.log("/login entered");
   console.log("req.body.internationalCode, ", req.body.internationalCode);
   console.log("req.body.phoneNumber, ", req.body.phoneNumber);
-  let internationalCode = req.body.internationalCode;
-  let phoneNumber = req.body.phoneNumber;
+
+  // Remove non-numeric characters and spaces from the formatted phone number
+  const strippedInternationalCode = req.body.internationalCode.replace(
+    /[\D\s]/g,
+    ""
+  );
+  // Remove non-numeric characters and spaces from the formatted phone number
+  const strippedPhoneNumber = req.body.phoneNumber
+    .replace(/[\D\s]/g, "")
+    .replace(/^0+/, "");
   let fullPhoneNumber = phoneNumberUtils.concatenatePhoneNumber(
-    internationalCode,
-    phoneNumber
+    strippedInternationalCode,
+    strippedPhoneNumber
   );
   console.log("whatsapp-verification local strategy entered");
   const { success, message, verificationCode } =

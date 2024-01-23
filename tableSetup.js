@@ -56,7 +56,6 @@ async function setupTables() {
       tableName: "verification_codes",
       columnDataTypes: {
         id: "SERIAL",
-        international_code: "VARCHAR(5)",
         phone_number: "VARCHAR(255) UNIQUE NOT NULL",
         code: "VARCHAR(6) NOT NULL",
         created_at: "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP",

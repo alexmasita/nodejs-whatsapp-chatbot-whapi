@@ -1,30 +1,6 @@
 const { dbInstance: db } = require("..");
-const ensureTableSchema = require("../../utils/ensureTableSchema");
 
 const groupMembershipsQueries = {
-  ensureGroupMembershipsTableSchema: async () => {
-    console.log("ensureGroupMembershipsTableSchema called");
-    const tableName = "group_memberships";
-    const columnDataTypes = {
-      id: "serial",
-      user_id: "integer references users(id)",
-      group_id: "integer references groups(id)",
-      role: "varchar(50) default 'admin'",
-    };
-    const primaryKey = { columns: ["id"], type: "serial" };
-    const tableConstraints = [
-      { type: "primary key", columns: ["id"] },
-      // Add more constraints as needed
-    ];
-
-    await ensureTableSchema(
-      tableName,
-      columnDataTypes,
-      primaryKey,
-      tableConstraints
-    );
-  },
-
   createGroupMembership: async (groupMembershipData, transaction) => {
     // Call ensureTableSchema before creating a user role
     //await groupMembershipsQueries.ensureGroupMembershipsTableSchema();
