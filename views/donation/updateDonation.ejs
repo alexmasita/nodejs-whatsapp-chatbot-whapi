@@ -1,0 +1,128 @@
+<!-- views/donation/updateDonation.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Donation</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f5f5f5;
+        text-align: center;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      form {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      label {
+        margin-top: 10px;
+        display: block;
+        font-weight: bold;
+        width: 130px;
+      }
+
+      input,
+      select {
+        padding: 8px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        flex: 1;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+        max-width: 450px;
+      }
+
+      select#internationalCode {
+        flex: 2;
+      }
+
+      input#phone_number {
+        flex: 3;
+      }
+
+      input#amount {
+        flex: 1;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Edit Donation</h1>
+
+    <!-- Donation update form goes here -->
+    <form action="/donations/update/<%= donation.id %>" method="post">
+      <!-- Include user-related fields -->
+      <div class="input-group">
+        <label for="name">Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value="<%= donation.name %>"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="internationalCode">Phone Number:</label>
+        <select id="internationalCode" name="internationalCode" required>
+          <!-- Add options for international code prefixes -->
+          <!-- <option value="+1">+1 (United States)</option> -->
+          <!-- <option value="+44">+44 (United Kingdom)</option> -->
+          <option value="+254">+254 (Kenya)</option>
+          <!-- Add more options as needed -->
+        </select>
+
+        <input
+          type="text"
+          id="phone_number"
+          name="phone_number"
+          value="<%= donation.phone_number %>"
+          required
+        />
+      </div>
+
+      <!-- Add other form fields -->
+      <div class="input-group">
+        <label for="amount">Amount:</label>
+        <input
+          type="text"
+          id="amount"
+          name="amount"
+          value="<%= donation.amount %>"
+          required
+        />
+      </div>
+
+      <button type="submit">Update Donation</button>
+    </form>
+
+    <!-- Add your script tags and other content as needed -->
+  </body>
+</html>

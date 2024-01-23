@@ -36,7 +36,12 @@ router.post("/login", async function (req, res) {
   console.log("whatsapp-verification local strategy entered");
   const { success, message, verificationCode } =
     await authenticationService.sendVerificationCode(fullPhoneNumber, req);
+
   req.session.user = { fullPhoneNumber, verificationCode };
+
+  console.log("set: req.session.user");
+  console.log(req.session.user);
+
   res.redirect("/auth/whatsApp");
 });
 

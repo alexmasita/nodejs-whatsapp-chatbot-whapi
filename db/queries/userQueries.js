@@ -1,35 +1,18 @@
 const { dbInstance: db } = require("../../db");
-const ensureTableSchema = require("../../utils/ensureTableSchema");
 
 const userQueries = {
-  ensureUserTableSchema: async () => {
-    console.log("ensureUserTableSchema called");
-    const tableName = "users";
-    const columnDataTypes = {
-      id: "serial",
-      name: "varchar(255)",
-      phone_number: "varchar(15) unique",
-      is_deleted: "boolean default false",
-    };
-    const primaryKey = { columns: ["id"], type: "serial" };
-    const tableConstraints = [
-      { type: "primary key", columns: ["id"] },
-      // Add more constraints as needed
-    ];
-
-    await ensureTableSchema(
-      tableName,
-      columnDataTypes,
-      primaryKey,
-      tableConstraints
-    );
-  },
-
   createUser: async (userData, transaction) => {
     // Call ensureTableSchema before creating a user
-    //await userQueries.ensureUserTableSchema();
-    // Strip non-numeric characters from the phone number
-    const strippedPhoneNumber = userData.phone_number.replace(/[\D\s]/g, "");
+
+    // Remove non-numeric characters and spaces from the formatted phone number
+    const strippedInternationalCode = userData.international_code.replace(
+      /[\D\s]/g,
+      ""
+    );
+    // Remove non-numeric characters and spaces from the formatted phone number
+    const strippedPhoneNumber = userData.phone_number
+      .replace(/[\D\s]/g, "")
+      .replace(/^0+/, "");
 
     const query =
       "INSERT INTO users (name, phone_number) VALUES (${name}, ${phone_number}) RETURNING *";
@@ -38,11 +21,16 @@ const userQueries = {
       // Use the provided transaction object
       return transaction.one(query, {
         ...userData,
+        international_code: strippedInternationalCode,
         phone_number: strippedPhoneNumber,
       });
     } else {
       // Execute the query without a transaction
-      return db.one(query, { ...userData, phone_number: strippedPhoneNumber });
+      return db.one(query, {
+        ...userData,
+        international_code: strippedInternationalCode,
+        phone_number: strippedPhoneNumber,
+      });
     }
   },
   updateUser: async (userId, updatedData, transaction) => {
@@ -50,20 +38,34 @@ const userQueries = {
     // await userQueries.ensureUserTableSchema();
     console.log("update User id: ", userId);
     // Extract the individual fields from the updatedData object
-    const { name, phone_number } = updatedData;
+    const { name, phone_number, international_code } = updatedData;
 
-    // Strip non-numeric characters from the phone number
-    const strippedPhoneNumber = phone_number.replace(/[\D\s]/g, "");
+    // Remove non-numeric characters and spaces from the formatted phone number
+    const strippedInternationalCode = international_code.replace(/[\D\s]/g, "");
+    // Remove non-numeric characters and spaces from the formatted phone number
+    const strippedPhoneNumber = phone_number
+      .replace(/[\D\s]/g, "")
+      .replace(/^0+/, "");
 
     const query =
-      "UPDATE users SET name = $2, phone_number = $3 WHERE id = $1 RETURNING *";
+      "UPDATE users SET name = $2, international_code = $3, phone_number = $4 WHERE id = $1 RETURNING *";
 
     if (transaction) {
       // Use the provided transaction object
-      return transaction.one(query, [userId, name, strippedPhoneNumber]);
+      return transaction.one(query, [
+        userId,
+        name,
+        strippedInternationalCode,
+        strippedPhoneNumber,
+      ]);
     } else {
       // Execute the query without a transaction
-      return db.one(query, [userId, name, strippedPhoneNumber]);
+      return db.one(query, [
+        userId,
+        name,
+        strippedInternationalCode,
+        strippedPhoneNumber,
+      ]);
     }
   },
 
@@ -78,7 +80,6 @@ const userQueries = {
   },
   getUserByPhoneNumber: async (phoneNumber, transaction) => {
     // Call ensureTableSchema before fetching a user by phone number
-    // await userQueries.ensureUserTableSchema();
 
     // Try to find the user by phone number
     const existingUser = await db.oneOrNone(

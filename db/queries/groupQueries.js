@@ -1,60 +1,47 @@
 // const pgp = require("pg-promise")();
 // const db = pgp(process.env.DATABASE_URL);
 const { dbInstance: db } = require("../../db");
-const ensureTableSchema = require("../../utils/ensureTableSchema"); // Adjust the path based on your actual structure
 const userQueries = require("./userQueries");
 const groupMembershipsQueries = require("./groupMembershipsQueries");
+const phoneNumberUtils = require("../../utils/phoneNumberUtils");
 
 const groupQueries = {
-  // Call ensureTableSchema before any CRUD operations
-  ensureGroupTableSchema: async () => {
-    console.log("ensureGroupTableSchema called");
-    const tableName = "groups";
-    const columnDataTypes = {
-      id: "serial",
-      your_user_id: "integer references users(id)",
-      recipient_phone_number: "varchar(15)",
-      description: "varchar(255)",
-      chat_id: "varchar(255)",
-      is_deleted: "boolean default false",
-    };
-    const primaryKey = { columns: ["id"], type: "serial" };
-    const tableConstraints = [
-      { type: "primary key", columns: ["id"] },
-      // Add more constraints as needed
-    ];
-
-    await ensureTableSchema(
-      tableName,
-      columnDataTypes,
-      primaryKey,
-      tableConstraints
-    );
-  },
-
   // SQL query to create a new group
   createGroup: async (groupData, sessionUser) => {
     return db.tx(async (transaction) => {
+      // Remove non-numeric characters and spaces from the formatted phone number
+      const strippedYourInternationalCode =
+        groupData.your_international_code.replace(/[\D\s]/g, "");
+      // Remove non-numeric characters and spaces from the formatted phone number
+      const strippedYourPhoneNumber = groupData.your_phone_number
+        .replace(/[\D\s]/g, "")
+        .replace(/^0+/, "");
+
       // Update user information
       const user = await userQueries.updateUser(
         sessionUser.id,
         {
           name: groupData.your_name,
-          phone_number: groupData.your_phone_number,
+          international_code: strippedYourInternationalCode,
+          phone_number: strippedYourPhoneNumber,
         },
         transaction
       );
 
       console.log("your_user_id: user.id", user.id);
-      // Strip non-numeric characters and spaces from the recipient_phone_number
-      const strippedRecipientPhoneNumber =
-        groupData.recipient_phone_number.replace(/[\D\s]/g, "");
+      // Strip leading zeros, non-numeric characters and spaces from the recipient_phone_number
+      const strippedRecipientInternationalCode =
+        groupData.recipient_international_code.replace(/[\D\s]/g, "");
+      const strippedRecipientPhoneNumber = groupData.recipient_phone_number
+        .replace(/[\D\s]/g, "")
+        .replace(/^0+/, "");
 
       const group = await transaction.one(
-        "INSERT INTO groups (your_user_id, recipient_phone_number, description, chat_id) VALUES (${your_user_id}, ${recipient_phone_number}, ${description}, ${chat_id}) RETURNING *",
+        "INSERT INTO groups (your_user_id, recipient_international_code, recipient_phone_number, description, chat_id) VALUES (${your_user_id}, ${recipient_phone_number}, ${description}, ${chat_id}) RETURNING *",
         {
           your_user_id: user.id,
           ...groupData,
+          recipient_international_code: strippedRecipientInternationalCode,
           recipient_phone_number: strippedRecipientPhoneNumber,
         }
       );
@@ -83,6 +70,7 @@ const groupQueries = {
       SELECT
         groups.*,
         users.name AS your_name,
+        users.international_code AS your_international_code,
         users.phone_number AS your_phone_number,
         group_memberships.role
       FROM
@@ -104,6 +92,7 @@ const groupQueries = {
     SELECT
       groups.*,
       users.name AS your_name,
+      users.international_code AS your_international_code,
       users.phone_number AS your_phone_number,
       group_memberships.role
     FROM
@@ -122,27 +111,40 @@ const groupQueries = {
     console.log("updatedData.your_user_id", updatedData.your_user_id);
     console.log("updatedData");
     console.log(updatedData);
+
+    // Remove non-numeric characters and spaces from the formatted phone number
+    const strippedYourInternationalCode =
+      updatedData.your_international_code.replace(/[\D\s]/g, "");
+    // Remove leading zeros, non-numeric characters and spaces from the formatted phone number
+    const strippedYourPhoneNumber = updatedData.your_phone_number
+      .replace(/[\D\s]/g, "")
+      .replace(/^0+/, "");
     return db.tx(async (transaction) => {
       // Update user information
       const user = await userQueries.updateUser(
         updatedData.your_user_id,
         {
           name: updatedData.your_name,
-          phone_number: updatedData.your_phone_number,
+          international_code: strippedYourInternationalCode,
+          phone_number: strippedYourPhoneNumber,
         },
         transaction
       );
 
+      // Remove non-numeric characters and spaces from the formatted phone number
+      const strippedRecipientInternationalCode =
+        updatedData.recipient_international_code.replace(/[\D\s]/g, "");
       // Strip non-numeric characters and spaces from the recipient phone number
       const strippedRecipientPhoneNumber =
         updatedData.recipient_phone_number.replace(/[\D\s]/g, "");
 
       // Update group information
       const group = await transaction.one(
-        "UPDATE groups SET your_user_id = $2, recipient_phone_number = $3, description = $4, chat_id = $5 WHERE id = $1 RETURNING *",
+        "UPDATE groups SET your_user_id = $2, recipient_international_code = $3,recipient_phone_number = $4, description = $5, chat_id = $6 WHERE id = $1 RETURNING *",
         [
           groupId,
           user.id,
+          strippedRecipientInternationalCode,
           strippedRecipientPhoneNumber,
           updatedData.description,
           updatedData.chat_id,

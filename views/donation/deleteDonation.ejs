@@ -1,0 +1,28 @@
+<!-- views/donation/deleteDonation.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Add your head content and styles here -->
+  </head>
+  <body>
+    <h1>Delete Donation</h1>
+
+    <p>Are you sure you want to delete this donation?</p>
+
+    <!-- Display donation details -->
+    <div>
+      <strong>Name:</strong> <%= donation.name %><br />
+      <strong>Phone Number:</strong> <%= donation.phone_number %><br />
+      <strong>Amount:</strong> <%= donation.amount %><br />
+      <!-- Display other donation details -->
+    </div>
+
+    <!-- Donation delete form goes here -->
+    <form action="/donations/delete/<%= donation.id %>" method="post">
+      <button type="submit">Confirm Deletion</button>
+    </form>
+
+    <!-- Add your script tags and other content as needed -->
+  </body>
+</html>

@@ -8,6 +8,7 @@ async function setupTables() {
       columnDataTypes: {
         id: "SERIAL",
         name: "VARCHAR(255)",
+        international_code: "VARCHAR(5)",
         phone_number: "VARCHAR(15) UNIQUE",
         is_deleted: "BOOLEAN DEFAULT false",
       },
@@ -19,6 +20,7 @@ async function setupTables() {
       columnDataTypes: {
         id: "SERIAL",
         your_user_id: "INTEGER REFERENCES users(id)",
+        recipient_international_code: "VARCHAR(5)",
         recipient_phone_number: "VARCHAR(15)",
         description: "VARCHAR(255)",
         chat_id: "VARCHAR(255)",
@@ -54,6 +56,7 @@ async function setupTables() {
       tableName: "verification_codes",
       columnDataTypes: {
         id: "SERIAL",
+        international_code: "VARCHAR(5)",
         phone_number: "VARCHAR(255) UNIQUE NOT NULL",
         code: "VARCHAR(6) NOT NULL",
         created_at: "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP",

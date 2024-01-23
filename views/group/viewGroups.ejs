@@ -47,6 +47,7 @@
         cursor: pointer;
         margin-bottom: 20px;
       }
+
       /* Add this style to stack buttons at the bottom */
       .group-card {
         display: flex;
@@ -59,6 +60,8 @@
         padding: 5px 10px;
         cursor: pointer;
       }
+
+      /* Add more styles as needed */
     </style>
   </head>
   <body>
@@ -91,6 +94,13 @@
         <button class="action-button" onclick="deleteGroup('<%= group.id %>')">
           Delete
         </button>
+        <!-- Add the "View Donations" button -->
+        <button
+          class="action-button"
+          onclick="viewDonations('<%= group.id %>')"
+        >
+          View Donations
+        </button>
       </div>
     </div>
     <% }); %> <% } else { %>
@@ -111,6 +121,12 @@
       function deleteGroup(groupId) {
         // Redirect to the delete route with the group ID
         window.location.href = `/groups/delete/${groupId}`;
+      }
+
+      // Function to view donations for a specific group
+      function viewDonations(groupId) {
+        // Redirect to the view donations route with the group ID
+        window.location.href = `/donations/view/${groupId}`;
       }
     </script>
   </body>
