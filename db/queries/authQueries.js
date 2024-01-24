@@ -1,7 +1,7 @@
 // const db = require("..");
-const { dbInstance: db } = require("../../db");
+const { dbInstance: db } = require("..");
 
-const verificationQueries = {
+const authQueries = {
   // SQL query to store a verification code
   insertOrUpdateVerificationCode: async (phoneNumber, code) => {
     try {
@@ -34,4 +34,4 @@ const verificationQueries = {
   },
 };
 
-module.exports = verificationQueries;
+module.exports = authQueries;

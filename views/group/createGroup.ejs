@@ -62,7 +62,8 @@
 
       <label for="your_phone_number">Your Phone Number:</label>
       <input
-        type="text"
+        type="tel"
+        id="your_phone_number"
         name="your_phone_number"
         value="<%= user.phone_number %>"
         readonly
@@ -70,9 +71,12 @@
 
       <label for="recipient_phone_number">Recipient Phone Number:</label>
       <input
-        type="text"
-        name="recipient_phone_number"
+        type="tel"
         id="recipient_phone_number"
+        name="recipient_phone_number"
+        pattern="^07[0-9]{8}$"
+        title="Enter a valid Kenyan phone number"
+        placeholder="07xxxxxxxx"
         required
       />
 
@@ -84,14 +88,5 @@
 
       <button type="submit">Create Group</button>
     </form>
-    <script>
-      function stripNonNumericAndSpaces() {
-        const recipientPhoneNumberField = document.getElementById(
-          "recipient_phone_number"
-        );
-        recipientPhoneNumberField.value =
-          recipientPhoneNumberField.value.replace(/[^0-9 ]/g, "");
-      }
-    </script>
   </body>
 </html>

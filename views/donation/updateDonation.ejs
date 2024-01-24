@@ -84,26 +84,29 @@
           type="text"
           id="name"
           name="name"
-          value="<%= donation.name %>"
+          value="<%= donation.donor_name %>"
           required
         />
       </div>
 
       <div class="input-group">
-        <label for="internationalCode">Phone Number:</label>
-        <select id="internationalCode" name="internationalCode" required>
+        <label for="international_code">Phone Number:</label>
+        <select id="international_code" name="international_code" required>
           <!-- Add options for international code prefixes -->
           <!-- <option value="+1">+1 (United States)</option> -->
           <!-- <option value="+44">+44 (United Kingdom)</option> -->
-          <option value="+254">+254 (Kenya)</option>
+          <option value="+254" <%= donation.donor_international_code === '254' ? 'selected' : '' %>>+254 (Kenya)</option>
           <!-- Add more options as needed -->
         </select>
 
         <input
-          type="text"
+          type="tel"
           id="phone_number"
           name="phone_number"
-          value="<%= donation.phone_number %>"
+          value="<%= donation.donor_phone_number %>"
+          pattern="^07[0-9]{8}$"
+          title="Enter a valid Kenyan phone number"
+          placeholder="07xxxxxxxx"
           required
         />
       </div>

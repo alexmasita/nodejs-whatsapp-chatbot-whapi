@@ -37,20 +37,30 @@
         color: #555;
       }
 
-      input[type="tel"] {
-        width: calc(100% - 16px);
-        padding: 8px;
+      .phone-number-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 16px;
+      }
+
+      #internationalCode {
+        width: 30%;
+        padding: 8px;
+        margin-right: 10px; /* Added margin between international code and phone number */
         border: 1px solid #ddd;
         border-radius: 4px;
       }
 
-      select {
-        width: 100%;
+      #phoneNumber {
+        width: 70%;
         padding: 8px;
-        margin-bottom: 16px;
         border: 1px solid #ddd;
         border-radius: 4px;
+      }
+
+      #phoneNumber::placeholder {
+        color: #999;
       }
 
       button {
@@ -72,16 +82,22 @@
   <body>
     <form action="/auth/login" method="post">
       <h2>Login with Phone Number</h2>
-      <label for="internationalCode">International Code:</label>
-      <select id="internationalCode" name="internationalCode" required>
-        <!-- Add options for international code prefixes -->
-        <!-- <option value="+1">+1 (United States)</option> -->
-        <!-- <option value="+44">+44 (United Kingdom)</option> -->
-        <option value="+254">+254 (Kenya)</option>
-        <!-- Add more options as needed -->
-      </select>
-      <label for="phoneNumber">Phone Number:</label>
-      <input type="tel" id="phoneNumber" name="phoneNumber" required />
+      <label for="phoneNumberGroup">Phone Number:</label>
+      <div class="phone-number-group">
+        <select id="internationalCode" name="internationalCode" required>
+          <option value="+254">+254 (Kenya)</option>
+          <!-- Add more options as needed -->
+        </select>
+        <input
+          type="tel"
+          id="phoneNumber"
+          name="phoneNumber"
+          pattern="^07[0-9]{8}$"
+          title="Enter a valid Kenyan phone number"
+          required
+          placeholder="07xxxxxxxx"
+        />
+      </div>
       <button type="submit">Send Code</button>
     </form>
   </body>

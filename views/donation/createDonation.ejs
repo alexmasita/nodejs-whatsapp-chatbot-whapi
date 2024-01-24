@@ -83,16 +83,23 @@
       </div>
 
       <div class="input-group">
-        <label for="internationalCode">Phone Number:</label>
-        <select id="internationalCode" name="internationalCode" required>
+        <label for="international_code">Phone Number:</label>
+        <select id="international_code" name="international_code" required>
           <!-- Add options for international code prefixes -->
           <!-- <option value="+1">+1 (United States)</option> -->
           <!-- <option value="+44">+44 (United Kingdom)</option> -->
           <option value="+254">+254 (Kenya)</option>
           <!-- Add more options as needed -->
         </select>
-
-        <input type="text" id="phone_number" name="phone_number" required />
+        <input
+          type="tel"
+          id="phone_number"
+          name="phone_number"
+          pattern="^07[0-9]{8}$"
+          title="Enter a valid Kenyan phone number"
+          placeholder="07xxxxxxxx"
+          required
+        />
       </div>
 
       <!-- Add your form fields including amount, donation_date, etc. -->

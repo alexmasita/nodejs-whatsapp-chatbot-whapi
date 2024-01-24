@@ -20,7 +20,7 @@ const sendWhatsAppVerification = async (phoneNumber, req) => {
 
     // Sending the message
     await sendToNumberSdk({
-      to: phoneNumber,
+      to: phoneNumber.toString(),
       body: messageBody,
     });
 

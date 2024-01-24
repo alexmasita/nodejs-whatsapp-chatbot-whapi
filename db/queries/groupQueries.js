@@ -11,18 +11,20 @@ const groupQueries = {
     return db.tx(async (transaction) => {
       // Remove non-numeric characters and spaces from the formatted phone number
       const strippedYourInternationalCode =
-        groupData.your_international_code.replace(/[\D\s]/g, "");
+        phoneNumberUtils.sanitizeInternationalCode(
+          groupData.your_international_code
+        );
       // Remove non-numeric characters and spaces from the formatted phone number
-      const strippedYourPhoneNumber = groupData.your_phone_number
-        .replace(/[\D\s]/g, "")
-        .replace(/^0+/, "");
+      const strippedYourPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+        groupData.your_phone_number
+      );
 
       // Update user information
       const user = await userQueries.updateUser(
         sessionUser.id,
         {
           name: groupData.your_name,
-          international_code: strippedYourInternationalCode,
+          international_code: strippedYourInternationalCode || 254,
           phone_number: strippedYourPhoneNumber,
         },
         transaction
@@ -31,17 +33,20 @@ const groupQueries = {
       console.log("your_user_id: user.id", user.id);
       // Strip leading zeros, non-numeric characters and spaces from the recipient_phone_number
       const strippedRecipientInternationalCode =
-        groupData.recipient_international_code.replace(/[\D\s]/g, "");
-      const strippedRecipientPhoneNumber = groupData.recipient_phone_number
-        .replace(/[\D\s]/g, "")
-        .replace(/^0+/, "");
+        phoneNumberUtils.sanitizeInternationalCode(
+          groupData.recipient_international_code
+        );
+      const strippedRecipientPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+        groupData.recipient_phone_number
+      );
 
       const group = await transaction.one(
-        "INSERT INTO groups (your_user_id, recipient_international_code, recipient_phone_number, description, chat_id) VALUES (${your_user_id}, ${recipient_phone_number}, ${description}, ${chat_id}) RETURNING *",
+        "INSERT INTO groups (your_user_id, recipient_international_code, recipient_phone_number, description, chat_id) VALUES (${your_user_id}, ${recipient_international_code}, ${recipient_phone_number}, ${description}, ${chat_id}) RETURNING *",
         {
           your_user_id: user.id,
           ...groupData,
-          recipient_international_code: strippedRecipientInternationalCode,
+          recipient_international_code:
+            strippedRecipientInternationalCode || 254,
           recipient_phone_number: strippedRecipientPhoneNumber,
         }
       );
@@ -114,18 +119,20 @@ const groupQueries = {
 
     // Remove non-numeric characters and spaces from the formatted phone number
     const strippedYourInternationalCode =
-      updatedData.your_international_code.replace(/[\D\s]/g, "");
+      phoneNumberUtils.sanitizeInternationalCode(
+        updatedData.your_international_code
+      );
     // Remove leading zeros, non-numeric characters and spaces from the formatted phone number
-    const strippedYourPhoneNumber = updatedData.your_phone_number
-      .replace(/[\D\s]/g, "")
-      .replace(/^0+/, "");
+    const strippedYourPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+      updatedData.your_phone_number
+    );
     return db.tx(async (transaction) => {
       // Update user information
       const user = await userQueries.updateUser(
         updatedData.your_user_id,
         {
           name: updatedData.your_name,
-          international_code: strippedYourInternationalCode,
+          international_code: strippedYourInternationalCode || 254,
           phone_number: strippedYourPhoneNumber,
         },
         transaction
@@ -133,10 +140,13 @@ const groupQueries = {
 
       // Remove non-numeric characters and spaces from the formatted phone number
       const strippedRecipientInternationalCode =
-        updatedData.recipient_international_code.replace(/[\D\s]/g, "");
+        phoneNumberUtils.sanitizeInternationalCode(
+          updatedData.recipient_international_code
+        );
       // Strip non-numeric characters and spaces from the recipient phone number
-      const strippedRecipientPhoneNumber =
-        updatedData.recipient_phone_number.replace(/[\D\s]/g, "");
+      const strippedRecipientPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+        updatedData.recipient_phone_number
+      );
 
       // Update group information
       const group = await transaction.one(

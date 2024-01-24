@@ -1,21 +1,18 @@
 const { dbInstance: db } = require("../../db");
+const phoneNumberUtils = require("../../utils/phoneNumberUtils");
 
 const userQueries = {
   createUser: async (userData, transaction) => {
-    // Call ensureTableSchema before creating a user
-
     // Remove non-numeric characters and spaces from the formatted phone number
-    const strippedInternationalCode = userData.international_code.replace(
-      /[\D\s]/g,
-      ""
+    const strippedInternationalCode =
+      phoneNumberUtils.sanitizeInternationalCode(userData.international_code);
+    // Remove non-numeric characters and spaces from the formatted phone number
+    const strippedPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+      userData.phone_number
     );
-    // Remove non-numeric characters and spaces from the formatted phone number
-    const strippedPhoneNumber = userData.phone_number
-      .replace(/[\D\s]/g, "")
-      .replace(/^0+/, "");
 
     const query =
-      "INSERT INTO users (name, phone_number) VALUES (${name}, ${phone_number}) RETURNING *";
+      "INSERT INTO users (name, international_code, phone_number) VALUES (${name}, ${international_code}, ${phone_number}) RETURNING *";
 
     if (transaction) {
       // Use the provided transaction object
@@ -40,12 +37,15 @@ const userQueries = {
     // Extract the individual fields from the updatedData object
     const { name, phone_number, international_code } = updatedData;
 
+    console.log("international_code");
+    console.log(international_code);
     // Remove non-numeric characters and spaces from the formatted phone number
-    const strippedInternationalCode = international_code.replace(/[\D\s]/g, "");
+    const strippedInternationalCode =
+      phoneNumberUtils.sanitizeInternationalCode(international_code);
+
     // Remove non-numeric characters and spaces from the formatted phone number
-    const strippedPhoneNumber = phone_number
-      .replace(/[\D\s]/g, "")
-      .replace(/^0+/, "");
+    const strippedPhoneNumber =
+      phoneNumberUtils.sanitizePhoneNumber(phone_number);
 
     const query =
       "UPDATE users SET name = $2, international_code = $3, phone_number = $4 WHERE id = $1 RETURNING *";
@@ -55,7 +55,7 @@ const userQueries = {
       return transaction.one(query, [
         userId,
         name,
-        strippedInternationalCode,
+        strippedInternationalCode || 254,
         strippedPhoneNumber,
       ]);
     } else {
@@ -78,7 +78,7 @@ const userQueries = {
       userId
     );
   },
-  getUserByPhoneNumber: async (phoneNumber, transaction) => {
+  getUserByPhoneNumber: async (internationalCode, phoneNumber, transaction) => {
     // Call ensureTableSchema before fetching a user by phone number
 
     // Try to find the user by phone number
@@ -93,7 +93,11 @@ const userQueries = {
     } else {
       // If user doesn't exist, create a new user with the provided phone number
       const newUser = await userQueries.createUser(
-        { name: "", phone_number: phoneNumber },
+        {
+          name: "",
+          international_code: internationalCode,
+          phone_number: phoneNumber,
+        },
         transaction
       );
 

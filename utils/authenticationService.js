@@ -1,6 +1,6 @@
 const sendWhatsAppVerification = require("./sendWhatsAppVerification");
 const userQueries = require("../db/queries/userQueries"); // Update the path accordingly
-const verificationQueries = require("../db/queries/verificationQueries");
+const authQueries = require("../db/queries/authQueries");
 
 const authenticationService = {
   sendVerificationCode: async (phoneNumber, req) => {
@@ -8,7 +8,7 @@ const authenticationService = {
       const verificationCode = await sendWhatsAppVerification(phoneNumber, req);
 
       // Store the verification code securely (e.g., in-memory cache or database)
-      await verificationQueries.insertOrUpdateVerificationCode(
+      await authQueries.insertOrUpdateVerificationCode(
         phoneNumber,
         verificationCode
       );
@@ -25,9 +25,9 @@ const authenticationService = {
     }
   },
 
-  getUserByPhoneNumber: async (phoneNumber) => {
+  getUserByPhoneNumber: async (internationalCode, phoneNumber) => {
     // Fetch user from the database based on the phone number
-    return userQueries.getUserByPhoneNumber(phoneNumber);
+    return userQueries.getUserByPhoneNumber(internationalCode, phoneNumber);
   },
 
   // Use an in-memory cache for simplicity (replace with a database in production)

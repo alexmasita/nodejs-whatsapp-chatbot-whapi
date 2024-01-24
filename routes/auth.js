@@ -4,7 +4,7 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 const authenticationService = require("../utils/authenticationService");
 const passport = require("passport");
-const verificationQueries = require("../db/queries/verificationQueries");
+const authQueries = require("../db/queries/authQueries");
 const authMiddleware = require("../middlewares/authMiddleware");
 const phoneNumberUtils = require("../utils/phoneNumberUtils");
 
@@ -29,23 +29,29 @@ router.post("/login", async function (req, res) {
   console.log("req.body.phoneNumber, ", req.body.phoneNumber);
 
   // Remove non-numeric characters and spaces from the formatted phone number
-  const strippedInternationalCode = req.body.internationalCode.replace(
-    /[\D\s]/g,
-    ""
+  const strippedInternationalCode = phoneNumberUtils.sanitizeInternationalCode(
+    req.body.internationalCode
   );
   // Remove non-numeric characters and spaces from the formatted phone number
-  const strippedPhoneNumber = req.body.phoneNumber
-    .replace(/[\D\s]/g, "")
-    .replace(/^0+/, "");
+  const strippedPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+    req.body.phoneNumber
+  );
   let fullPhoneNumber = phoneNumberUtils.concatenatePhoneNumber(
     strippedInternationalCode,
     strippedPhoneNumber
   );
+  console.log("fullPhoneNumber - phoneNumberUtils.concatenatePhoneNumber");
+  console.log(fullPhoneNumber);
   console.log("whatsapp-verification local strategy entered");
   const { success, message, verificationCode } =
     await authenticationService.sendVerificationCode(fullPhoneNumber, req);
 
-  req.session.user = { fullPhoneNumber, verificationCode };
+  req.session.user = {
+    internationalCode: strippedInternationalCode,
+    phoneNumber: strippedPhoneNumber,
+    fullPhoneNumber,
+    verificationCode,
+  };
 
   console.log("set: req.session.user");
   console.log(req.session.user);
@@ -53,19 +59,22 @@ router.post("/login", async function (req, res) {
   res.redirect("/auth/whatsApp");
 });
 
-router.get("/verify", (req, res) => {
-  // Render the verification page
-  console.log("req.session.user = /verify");
-  console.log(req.session.user);
-  console.log(req.session.user.fullPhoneNumber);
-  res.render("verify", { phoneNumber: req.session.user.fullPhoneNumber });
-});
+// router.get("/verify", (req, res) => {
+//   // Render the verification page
+//   console.log("req.session.user = /verify");
+//   console.log(req.session.user);
+//   console.log(req.session.user.fullPhoneNumber);
+//   res.render("verify", { phoneNumber: req.session.user.fullPhoneNumber });
+// });
 
 router.get("/whatsApp", (req, res) => {
   // Render the verification page
   console.log("req.session.user = /verify");
   console.log(req.session.user);
   console.log(req.session.user.fullPhoneNumber);
+  if (!req.session.user.fullPhoneNumber) {
+    return res.redirect("/auth/login");
+  }
   res.render("whatsApp");
 });
 
@@ -76,7 +85,8 @@ router.get("/validate", (req, res) => {
   console.log(req.query.code);
   console.log("req.session.user.fullPhoneNumber");
   console.log(req.session.user.fullPhoneNumber);
-  req.query.phoneNumber = req.session.user.fullPhoneNumber;
+  //req.query.phoneNumber = req.session.user.fullPhoneNumber;
+  req.query.phoneNumber = req.session.user.phoneNumber;
 
   if (!req.query.code || !req.query.phoneNumber) {
     return res.redirect("/auth/login");

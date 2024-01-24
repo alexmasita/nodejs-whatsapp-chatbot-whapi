@@ -10,22 +10,22 @@ const donationQueries = {
       //   donationData.international_code,
       //   donationData.phone_number
       // );
+      // Remove non-numeric characters and spaces from the formatted phone number
+      const strippedInternationalCode =
+        phoneNumberUtils.sanitizeInternationalCode(
+          donationData.international_code
+        );
+      // Remove non-numeric characters and spaces from the formatted phone number
+      const strippedPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+        donationData.phone_number
+      );
 
       // Update user information
       const existingUser = await userQueries.getUserByPhoneNumber(
-        donationData.phone_number,
+        strippedInternationalCode,
+        strippedPhoneNumber,
         transaction
       );
-
-      // Remove non-numeric characters and spaces from the formatted phone number
-      const strippedInternationalCode = donationData.international_code.replace(
-        /[\D\s]/g,
-        ""
-      );
-      // Remove non-numeric characters and spaces from the formatted phone number
-      const strippedPhoneNumber = donationData.phone_number
-        .replace(/[\D\s]/g, "")
-        .replace(/^0+/, "");
 
       const user = existingUser
         ? await userQueries.updateUser(
@@ -67,7 +67,7 @@ const donationQueries = {
       SELECT
         donations.*,
         users.name AS donor_name,
-        users.international_code AS donor_international_code
+        users.international_code AS donor_international_code,
         users.phone_number AS donor_phone_number
       FROM
         donations
@@ -88,7 +88,7 @@ const donationQueries = {
       SELECT
         donations.*,
         users.name AS donor_name,
-        users.international_code AS donor_international_code
+        users.international_code AS donor_international_code,
         users.phone_number AS donor_phone_number
       FROM
         donations
@@ -110,18 +110,19 @@ const donationQueries = {
 
       // Update user information
       const existingUser = await userQueries.getUserByPhoneNumber(
+        updatedData.international_code,
         updatedData.phone_number,
         transaction
       );
       // Remove non-numeric characters and spaces
-      const strippedInternationalCode = updatedData.international_code.replace(
-        /[\D\s]/g,
-        ""
-      );
+      const strippedInternationalCode =
+        phoneNumberUtils.sanitizeInternationalCode(
+          updatedData.international_code
+        );
       // Remove leading zeros, non-numeric characters and spaces
-      const strippedPhoneNumber = updatedData.phone_number
-        .replace(/[\D\s]/g, "")
-        .replace(/^0+/, "");
+      const strippedPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+        updatedData.phone_number
+      );
 
       const user = existingUser
         ? await userQueries.updateUser(

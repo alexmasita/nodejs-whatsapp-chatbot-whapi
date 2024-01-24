@@ -66,20 +66,21 @@
       />
       <label for="your_phone_number">Your Phone Number:</label>
       <input
-        type="text"
+        type="tel"
+        id="your_phone_number"
         name="your_phone_number"
-        value="<%= group.your_phone_number %>"
         readonly
       />
-
       <label for="recipient_phone_number">Recipient Phone Number:</label>
+
       <input
-        type="text"
+        type="tel"
+        id="recipient_phone_number"
         name="recipient_phone_number"
-        value="<%= group.recipient_phone_number %>"
+        pattern="^07[0-9]{8}$"
+        title="Enter a valid Kenyan phone number"
         required
       />
-
       <label for="description">Description:</label>
       <input
         type="text"

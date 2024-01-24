@@ -5,22 +5,34 @@ const passport = require("passport");
 const pgSession = require("connect-pg-simple")(session);
 const pgp = require("pg-promise")();
 const { dbInstance: db, closeDatabase } = require("./db");
-const verificationQueries = require("./db/queries/verificationQueries");
-// Passport configuration (replace with your strategy, e.g., local, whatsapp-verification)
+const authQueries = require("./db/queries/authQueries");
 const authenticationService = require("./utils/authenticationService");
 const LocalStrategy = require("passport-local").Strategy;
+const phoneNumberUtils = require("./utils/phoneNumberUtils");
 
 passport.use(
   new LocalStrategy(
-    { usernameField: "phoneNumber", passwordField: "code" },
-    async (phoneNumber, code, done) => {
+    {
+      usernameField: "phoneNumber",
+      passwordField: "code",
+      passReqToCallback: true,
+    },
+    async (req, phoneNumber, code, done) => {
       console.log("whatsapp-verification local strategy entered");
       console.log("phoneNumber ", phoneNumber);
       console.log("code ", code);
+      console.log("req - in localStrategy");
+      console.log(req);
       // const { success, message, verificationCode } =
       //   await authenticationService.sendVerificationCode(username);
-      const storedVerificationCode =
-        await verificationQueries.getVerificationCode(phoneNumber);
+      const fullPhoneNumber = phoneNumberUtils.concatenatePhoneNumber(
+        req.session.user.internationalCode,
+        phoneNumber
+      );
+
+      const storedVerificationCode = await authQueries.getVerificationCode(
+        fullPhoneNumber
+      );
 
       console.log("storedVerificationCode", storedVerificationCode);
       console.log("code", code);
@@ -29,8 +41,16 @@ passport.use(
         // const user = await authenticationService.getUserByPhoneNumber(
         //   phoneNumber
         // );
-        console.log("phoneNumber in done", phoneNumber);
-        return done(null, phoneNumber); // Successfully sent verification code
+        console.log("phoneNumber in done", {
+          internationalCode: req.session.user.internationalCode,
+          phoneNumber,
+          fullPhoneNumber,
+        });
+        return done(null, {
+          internationalCode: req.session.user.internationalCode,
+          phoneNumber,
+          fullPhoneNumber,
+        }); // Successfully sent verification code
       } else {
         return done(null, false, {
           message: "Code verification failed",
@@ -40,16 +60,19 @@ passport.use(
   )
 );
 
-passport.serializeUser((phoneNumber, done) => {
-  console.log("phoneNumber in serializeUser", phoneNumber);
-  done(null, phoneNumber);
+passport.serializeUser((user, done) => {
+  console.log("phoneNumber in serializeUser", user);
+  done(null, user);
 });
 
-passport.deserializeUser(async (phoneNumber, done) => {
-  console.log("phoneNumber in deserializeUser", phoneNumber);
-  const user = await authenticationService.getUserByPhoneNumber(phoneNumber);
-  console.log("user in deserializeUser", user);
-  done(null, user);
+passport.deserializeUser(async (user, done) => {
+  console.log("phoneNumber in deserializeUser", user.phoneNumber);
+  const fetchedUser = await authenticationService.getUserByPhoneNumber(
+    user.internationalCode,
+    user.phoneNumber
+  );
+  console.log("user in deserializeUser", fetchedUser);
+  done(null, fetchedUser);
 });
 
 const app = express();
