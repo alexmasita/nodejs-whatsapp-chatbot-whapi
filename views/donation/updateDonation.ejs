@@ -70,6 +70,21 @@
         cursor: pointer;
         margin-top: 10px;
       }
+
+      /* Cancel button styling */
+      a {
+        text-decoration: none;
+      }
+
+      button.cancel {
+        background-color: #ff6961; /* Reddish hue */
+        color: #fff;
+        margin-left: 10px;
+        cursor: pointer;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+      }
     </style>
   </head>
   <body>
@@ -93,9 +108,9 @@
         <label for="international_code">Phone Number:</label>
         <select id="international_code" name="international_code" required>
           <!-- Add options for international code prefixes -->
-          <!-- <option value="+1">+1 (United States)</option> -->
-          <!-- <option value="+44">+44 (United Kingdom)</option> -->
-          <option value="+254" <%= donation.donor_international_code === '254' ? 'selected' : '' %>>+254 (Kenya)</option>
+          <!-- <option value="+1" <%= donation.donor_international_code === '+1' ? 'selected' : '' %>>+1 (United States)</option> -->
+          <!-- <option value="+44" <%= donation.donor_international_code === '+44' ? 'selected' : '' %>>+44 (United Kingdom)</option> -->
+          <option value="254" <%= donation.donor_international_code === '254' ? 'selected' : '' %>>+254 (Kenya)</option>
           <!-- Add more options as needed -->
         </select>
 
@@ -123,7 +138,15 @@
         />
       </div>
 
-      <button type="submit">Update Donation</button>
+      <!-- Buttons -->
+      <div class="input-group">
+        <button type="submit">Update Donation</button>
+
+        <!-- Cancel button -->
+        <a href="/donations/view/<%= donation.group_id %>">
+          <button type="button" class="cancel">Cancel</button>
+        </a>
+      </div>
     </form>
 
     <!-- Add your script tags and other content as needed -->

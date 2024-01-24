@@ -2,14 +2,43 @@ const { dbInstance: db } = require("../../db");
 const phoneNumberUtils = require("../../utils/phoneNumberUtils");
 const userQueries = require("./userQueries");
 
+const calculateTotalAmount = async (groupId, transaction) => {
+  const totalAmountQuery =
+    "SELECT COALESCE(SUM(amount), 0) FROM donations WHERE group_id = $1 AND is_deleted = false";
+  const totalAmount = await (transaction || db).one(totalAmountQuery, groupId);
+
+  return totalAmount.coalesce;
+};
+
 const donationQueries = {
+  getAllDonationsByGroup: async (groupId, transaction) => {
+    return (transaction || db).tx(async (trans) => {
+      const donations = await trans.any(
+        `
+        SELECT
+          donations.*,
+          users.name AS donor_name,
+          users.international_code AS donor_international_code,
+          users.phone_number AS donor_phone_number
+        FROM
+          donations
+          JOIN users ON donations.user_id = users.id
+        WHERE
+          donations.group_id = $1 AND donations.is_deleted = false
+      `,
+        groupId
+      );
+
+      // Calculate total amount
+      const totalAmount = await calculateTotalAmount(groupId, trans);
+
+      return { donations, totalAmount };
+    });
+  },
+
   createDonation: async (donationData, sessionUser, groupId) => {
     return db.tx(async (transaction) => {
-      // Concatenate internationalCode and phone_number
-      // const fullPhoneNumber = phoneNumberUtils.concatenatePhoneNumber(
-      //   donationData.international_code,
-      //   donationData.phone_number
-      // );
+      // ... existing code ...
       // Remove non-numeric characters and spaces from the formatted phone number
       const strippedInternationalCode =
         phoneNumberUtils.sanitizeInternationalCode(
@@ -54,30 +83,81 @@ const donationQueries = {
           amount: donationData.amount,
         }
       );
-      return donation;
+
+      // Calculate total amount
+      const totalAmount = await calculateTotalAmount(groupId, transaction);
+
+      return { donation, totalAmount };
     });
   },
 
-  getAllDonationsByGroup: async (groupId) => {
-    // Call ensureTableSchema before fetching all donations
-    //await donationQueries.ensureDonationTableSchema();
+  // createDonation: async (donationData, sessionUser, groupId) => {
+  //   return db.tx(async (transaction) => {
+  //     // Remove non-numeric characters and spaces from the formatted phone number
+  //     const strippedInternationalCode =
+  //       phoneNumberUtils.sanitizeInternationalCode(
+  //         donationData.international_code
+  //       );
+  //     // Remove non-numeric characters and spaces from the formatted phone number
+  //     const strippedPhoneNumber = phoneNumberUtils.sanitizePhoneNumber(
+  //       donationData.phone_number
+  //     );
 
-    return db.any(
-      `
-      SELECT
-        donations.*,
-        users.name AS donor_name,
-        users.international_code AS donor_international_code,
-        users.phone_number AS donor_phone_number
-      FROM
-        donations
-        JOIN users ON donations.user_id = users.id
-      WHERE
-        donations.group_id = $1 AND donations.is_deleted = false
-    `,
-      groupId
-    );
-  },
+  //     // Update user information
+  //     const existingUser = await userQueries.getUserByPhoneNumber(
+  //       strippedInternationalCode,
+  //       strippedPhoneNumber,
+  //       transaction
+  //     );
+
+  //     const user = existingUser
+  //       ? await userQueries.updateUser(
+  //           existingUser.id,
+  //           {
+  //             name: donationData.name,
+  //             international_code: strippedInternationalCode,
+  //             phone_number: strippedPhoneNumber, // Use the stripped phone number
+  //           },
+  //           transaction
+  //         )
+  //       : await userQueries.createUser(
+  //           {
+  //             name: donationData.name,
+  //             international_code: strippedInternationalCode,
+  //             phone_number: strippedPhoneNumber, // Use the stripped phone number
+  //           },
+  //           transaction
+  //         );
+
+  //     const donation = await transaction.one(
+  //       "INSERT INTO donations (user_id, group_id, amount, donation_date) VALUES (${user_id}, ${group_id}, ${amount}, CURRENT_TIMESTAMP) RETURNING *",
+  //       {
+  //         user_id: user.id,
+  //         group_id: groupId,
+  //         amount: donationData.amount,
+  //       }
+  //     );
+  //     return donation;
+  //   });
+  // },
+
+  // getAllDonationsByGroup: async (groupId) => {
+  //   return db.any(
+  //     `
+  //     SELECT
+  //       donations.*,
+  //       users.name AS donor_name,
+  //       users.international_code AS donor_international_code,
+  //       users.phone_number AS donor_phone_number
+  //     FROM
+  //       donations
+  //       JOIN users ON donations.user_id = users.id
+  //     WHERE
+  //       donations.group_id = $1 AND donations.is_deleted = false
+  //   `,
+  //     groupId
+  //   );
+  // },
 
   getDonationById: async (donationId) => {
     // Call ensureTableSchema before fetching a donation by ID

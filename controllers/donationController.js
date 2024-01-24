@@ -29,7 +29,7 @@ const donationController = {
       // Validate the form data (add more validation as needed)
 
       // Insert the donation into the database
-      const newDonation = await donationQueries.createDonation(
+      const { donation, totalAmount } = await donationQueries.createDonation(
         donationData,
         req.user,
         groupId
@@ -48,7 +48,8 @@ const donationController = {
       const groupId = req.params.groupId;
 
       // Fetch donations for the group
-      const donations = await donationQueries.getAllDonationsByGroup(groupId);
+      const { donations, totalAmount } =
+        await donationQueries.getAllDonationsByGroup(groupId);
 
       // Fetch group details including the description
       const groupDetails = await groupQueries.getGroupById(groupId);
@@ -62,6 +63,7 @@ const donationController = {
         path.join(__dirname, "..", "views", "donation", "viewDonations"),
         {
           donations,
+          totalAmount,
           groupDescription: groupDetails.description,
           groupId: groupId,
         }
