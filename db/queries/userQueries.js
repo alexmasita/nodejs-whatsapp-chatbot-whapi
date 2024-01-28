@@ -35,7 +35,7 @@ const userQueries = {
     // await userQueries.ensureUserTableSchema();
     console.log("update User id: ", userId);
     // Extract the individual fields from the updatedData object
-    const { name, phone_number, international_code } = updatedData;
+    const { name, id_number, phone_number, international_code } = updatedData;
 
     console.log("international_code");
     console.log(international_code);
@@ -48,13 +48,14 @@ const userQueries = {
       phoneNumberUtils.sanitizePhoneNumber(phone_number);
 
     const query =
-      "UPDATE users SET name = $2, international_code = $3, phone_number = $4 WHERE id = $1 RETURNING *";
+      "UPDATE users SET name = $2, id_number = $3, international_code = $4, phone_number = $5 WHERE id = $1 RETURNING *";
 
     if (transaction) {
       // Use the provided transaction object
       return transaction.one(query, [
         userId,
         name,
+        id_number,
         strippedInternationalCode || 254,
         strippedPhoneNumber,
       ]);
@@ -63,6 +64,7 @@ const userQueries = {
       return db.one(query, [
         userId,
         name,
+        id_number,
         strippedInternationalCode,
         strippedPhoneNumber,
       ]);

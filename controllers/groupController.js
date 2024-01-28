@@ -20,6 +20,7 @@ const groupController = {
       // Get form data from the request body
       const {
         your_name,
+        your_id_number,
         your_phone_number,
         recipient_phone_number,
         description,
@@ -32,6 +33,7 @@ const groupController = {
       const newGroup = await groupQueries.createGroup(
         {
           your_name,
+          your_id_number,
           your_phone_number,
           recipient_phone_number,
           description,

@@ -3,24 +3,89 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Add your head content and styles here -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Donation</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f5f5f5;
+        text-align: center;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      p {
+        margin-bottom: 20px;
+      }
+
+      table {
+        margin: 0 auto;
+        text-align: left;
+      }
+
+      table td {
+        padding: 5px;
+      }
+
+      button {
+        background-color: #e74c3c;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+
+      /* Cancel button styling */
+      a {
+        text-decoration: none;
+      }
+
+      button.cancel {
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
     <h1>Delete Donation</h1>
 
     <p>Are you sure you want to delete this donation?</p>
 
-    <!-- Display donation details -->
-    <div>
-      <strong>Name:</strong> <%= donation.name %><br />
-      <strong>Phone Number:</strong> <%= donation.phone_number %><br />
-      <strong>Amount:</strong> <%= donation.amount %><br />
-      <!-- Display other donation details -->
-    </div>
+    <!-- Display donation details using a table -->
+    <table>
+      <tr>
+        <td><strong>Name:</strong></td>
+        <td><%= donation.name %></td>
+      </tr>
+      <tr>
+        <td><strong>Phone Number:</strong></td>
+        <td><%= donation.phone_number %></td>
+      </tr>
+      <tr>
+        <td><strong>Amount:</strong></td>
+        <td><%= donation.amount %></td>
+      </tr>
+      <!-- Add more rows as needed -->
+    </table>
 
     <!-- Donation delete form goes here -->
     <form action="/donations/delete/<%= donation.id %>" method="post">
       <button type="submit">Confirm Deletion</button>
+
+      <!-- Cancel button -->
+      <a href="/donations/view/<%= donation.group_id %>">
+        <button type="button" class="cancel">Cancel</button>
+      </a>
     </form>
 
     <!-- Add your script tags and other content as needed -->

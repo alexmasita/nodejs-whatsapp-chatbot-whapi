@@ -49,6 +49,18 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        margin-right: 10px;
+      }
+
+      .cancel-button {
+        display: inline-block;
+        background-color: #d9534f;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -64,11 +76,19 @@
         value="<%= group.your_name %>"
         required
       />
+      <label for="your_id_number">Your ID Number:</label>
+      <input
+        type="text"
+        name="your_id_number"
+        value="<%= group.your_id_number %>"
+        required
+      />
       <label for="your_phone_number">Your Phone Number:</label>
       <input
         type="tel"
         id="your_phone_number"
         name="your_phone_number"
+        value="<%= group.your_phone_number%>"
         readonly
       />
       <label for="recipient_phone_number">Recipient Phone Number:</label>
@@ -79,6 +99,7 @@
         name="recipient_phone_number"
         pattern="^07[0-9]{8}$"
         title="Enter a valid Kenyan phone number"
+        value="<%= group.recipient_phone_number%>"
         required
       />
       <label for="description">Description:</label>
@@ -93,6 +114,7 @@
       <input type="text" name="chat_id" value="<%= group.chat_id %>" required />
 
       <button type="submit">Update Group</button>
+      <a class="cancel-button" href="/groups/view">Cancel</a>
     </form>
   </body>
 </html>

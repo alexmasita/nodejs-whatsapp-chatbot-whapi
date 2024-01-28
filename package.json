@@ -5,12 +5,14 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "node app.js"
+    "build:css": "postcss public/styles.css -o public/build/styles.css",
+    "watch:css": "postcss public/styles.css -o public/build/styles.css --watch"
   },
   "author": "A.K.",
   "license": "ISC",
   "dependencies": {
     "api": "^6.1.1",
+    "autoprefixer": "^10.4.17",
     "axios": "^1.6.4",
     "body-parser": "^1.19.0",
     "connect-pg-simple": "^9.0.1",
@@ -23,7 +25,10 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pg": "^8.11.3",
-    "pg-promise": "^11.5.4"
+    "pg-promise": "^11.5.4",
+    "postcss": "^8.4.33",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.1"
   },
   "engines": {
     "node": "16.15.1"

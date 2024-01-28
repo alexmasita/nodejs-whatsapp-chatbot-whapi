@@ -8,6 +8,7 @@ async function setupTables() {
       columnDataTypes: {
         id: "SERIAL",
         name: "VARCHAR(255)",
+        id_number: "VARCHAR(20) UNIQUE",
         international_code: "VARCHAR(10)",
         phone_number: "VARCHAR(20) UNIQUE",
         is_deleted: "BOOLEAN DEFAULT false",
@@ -67,7 +68,10 @@ async function setupTables() {
       tableName: "donations",
       columnDataTypes: {
         id: "SERIAL",
-        user_id: "INTEGER REFERENCES users(id)",
+        name: "VARCHAR(20)",
+        id_number: "VARCHAR(20)",
+        international_code: "VARCHAR(20)",
+        phone_number: "VARCHAR(20)",
         group_id: "INTEGER REFERENCES groups(id)",
         amount: "DECIMAL",
         donation_date: "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",

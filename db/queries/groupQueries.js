@@ -24,6 +24,7 @@ const groupQueries = {
         sessionUser.id,
         {
           name: groupData.your_name,
+          id_number: groupData.your_id_number,
           international_code: strippedYourInternationalCode || 254,
           phone_number: strippedYourPhoneNumber,
         },
@@ -75,6 +76,7 @@ const groupQueries = {
       SELECT
         groups.*,
         users.name AS your_name,
+        users.id_number AS your_id_number,
         users.international_code AS your_international_code,
         users.phone_number AS your_phone_number,
         group_memberships.role
@@ -97,6 +99,7 @@ const groupQueries = {
     SELECT
       groups.*,
       users.name AS your_name,
+      users.id_number AS your_id_number,
       users.international_code AS your_international_code,
       users.phone_number AS your_phone_number,
       group_memberships.role
@@ -132,6 +135,7 @@ const groupQueries = {
         updatedData.your_user_id,
         {
           name: updatedData.your_name,
+          id_number: updatedData.your_id_number,
           international_code: strippedYourInternationalCode || 254,
           phone_number: strippedYourPhoneNumber,
         },

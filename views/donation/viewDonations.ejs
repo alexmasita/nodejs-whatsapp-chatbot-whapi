@@ -108,8 +108,9 @@
     donations.forEach(donation => { %>
     <div class="group-card">
       <div>
-        <strong>Name:</strong> <%= donation.donor_name %><br />
-        <strong>Phone Number:</strong> <%= donation.donor_phone_number %><br />
+        <strong>Name:</strong> <%= donation.name %><br />
+        <strong>ID Number:</strong> <%= donation.id_number %><br />
+        <strong>Phone Number:</strong> <%= donation.phone_number %><br />
         <strong>Amount:</strong> <%= donation.amount %><br />
         <strong>Donation Date:</strong> <%= donation.donation_date %><br />
         <!-- Add more fields as needed -->

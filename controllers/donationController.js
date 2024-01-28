@@ -31,7 +31,6 @@ const donationController = {
       // Insert the donation into the database
       const { donation, totalAmount } = await donationQueries.createDonation(
         donationData,
-        req.user,
         groupId
       );
 
@@ -132,8 +131,8 @@ const donationController = {
   postDeleteDonation: async (req, res) => {
     try {
       const donationId = req.params.id;
-      const groupId = req.body.group_id;
-
+      const donation = await donationQueries.getDonationById(donationId);
+      const groupId = donation.group_id;
       // Perform the database deletion using the deleteDonation query
       await donationQueries.deleteDonation(donationId);
 
