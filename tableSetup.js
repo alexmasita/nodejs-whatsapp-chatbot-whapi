@@ -84,12 +84,12 @@ async function setupTables() {
 
   // Loop through each table schema and ensure its schema
   for (const schema of tableSchemas) {
-    // await ensureTableSchema(
-    //   schema.tableName,
-    //   schema.columnDataTypes,
-    //   schema.primaryKey,
-    //   schema.tableConstraints
-    // );
+    await ensureTableSchema(
+      schema.tableName,
+      schema.columnDataTypes,
+      schema.primaryKey,
+      schema.tableConstraints
+    );
     console.log(`Table schema ensured for ${schema.tableName}`);
   }
 
