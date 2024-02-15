@@ -107,6 +107,28 @@ const userQueries = {
       return newUser;
     }
   },
+  deleteUser: async (userId, transaction) => {
+    // Call ensureTableSchema before deleting a user
+    // await userQueries.ensureUserTableSchema();
+
+    const query =
+      "UPDATE users SET is_deleted = true WHERE id = $1 RETURNING *";
+
+    if (transaction) {
+      // Use the provided transaction object
+      return transaction.one(query, userId);
+    } else {
+      // Execute the query without a transaction
+      return db.one(query, userId);
+    }
+  },
+
+  getAllUsers: async () => {
+    // Call ensureTableSchema before fetching all users
+    // await userQueries.ensureUserTableSchema();
+
+    return db.manyOrNone("SELECT * FROM users WHERE is_deleted = false");
+  },
 };
 
 module.exports = userQueries;

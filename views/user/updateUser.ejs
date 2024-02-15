@@ -1,0 +1,70 @@
+<!-- views/user/updateUser.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update User</title>
+    <link rel="stylesheet" href="/build/styles.css" />
+  </head>
+
+  <body class="font-sans flex justify-center items-center h-screen bg-gray-200">
+    <form
+      action="/users/update/<%= user.id %>"
+      method="post"
+      class="max-w-md w-full p-6 shadow-md bg-white rounded-md"
+    >
+      <h2 class="text-center text-2xl text-gray-700">Update User</h2>
+      <label for="name" class="block text-gray-500 mb-2">Name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        required
+        value="<%= user.name %>"
+        class="w-full p-2 border border-gray-300 rounded-md mb-4"
+      />
+
+      <label for="idNumber" class="block text-gray-500 mb-2">ID Number:</label>
+      <input
+        type="text"
+        id="idNumber"
+        name="idNumber"
+        required
+        value="<%= user.id_number %>"
+        class="w-full p-2 border border-gray-300 rounded-md mb-4"
+      />
+
+      <label for="internationalCode" class="block text-gray-500 mb-2"
+        >International Code:</label
+      >
+      <input
+        type="text"
+        id="internationalCode"
+        name="internationalCode"
+        required
+        value="<%= user.international_code %>"
+        class="w-full p-2 border border-gray-300 rounded-md mb-4"
+      />
+
+      <label for="phoneNumber" class="block text-gray-500 mb-2"
+        >Phone Number:</label
+      >
+      <input
+        type="tel"
+        id="phoneNumber"
+        name="phoneNumber"
+        required
+        value="<%= user.phone_number %>"
+        class="w-full p-2 border border-gray-300 rounded-md mb-4"
+      />
+
+      <button
+        type="submit"
+        class="w-full p-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+      >
+        Update User
+      </button>
+    </form>
+  </body>
+</html>

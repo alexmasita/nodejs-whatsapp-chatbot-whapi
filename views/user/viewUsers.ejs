@@ -1,0 +1,66 @@
+<!-- views/user/viewUsers.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Users</title>
+    <link rel="stylesheet" href="/build/styles.css" />
+  </head>
+
+  <body class="font-sans flex justify-center items-center h-screen bg-gray-200">
+    <div class="max-w-md w-full p-6 shadow-md bg-white rounded-md">
+      <h2 class="text-center text-2xl text-gray-700">User List</h2>
+
+      <div class="mb-4 text-right">
+        <a href="/users/create" class="hidden">Add New User</a>
+        <button
+          onclick="window.location.href='/users/create'"
+          class="bg-green-500 text-white px-4 py-2 rounded-full"
+        >
+          Add New User
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        <% users.forEach(user => { %>
+        <div class="bg-white rounded-md p-4 shadow-md">
+          <div class="mb-4">
+            <strong>ID:</strong> <%= user.id %><br />
+            <strong>Name:</strong> <%= user.name %><br />
+            <strong>ID Number:</strong> <%= user.id_number %><br />
+            <strong>International Code:</strong> <%= user.international_code
+            %><br />
+            <strong>Phone Number:</strong> <%= user.phone_number %><br />
+            <!-- Add other fields as needed -->
+          </div>
+
+          <!-- Add actions or additional details if required -->
+          <div class="flex justify-between items-center">
+            <button
+              onclick="window.location.href='/users/update/<%= user.id %>'"
+              class="bg-blue-500 text-white px-3 py-1 rounded-full"
+            >
+              Edit
+            </button>
+            <button
+              onclick="deleteUser('<%= user.id %>')"
+              class="bg-blue-500 text-white px-3 py-1 mx-5 rounded-full"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+    <script>
+      // Add a JavaScript function to handle delete confirmation
+      function deleteUser(userId) {
+        if (confirm("Are you sure you want to delete this user?")) {
+          window.location.href = "/users/delete/" + userId;
+        }
+      }
+    </script>
+  </body>
+</html>

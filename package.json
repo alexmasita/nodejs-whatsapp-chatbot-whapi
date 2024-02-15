@@ -32,5 +32,8 @@
   },
   "engines": {
     "node": "16.15.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7"
   }
 }
